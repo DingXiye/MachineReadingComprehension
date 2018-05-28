@@ -73,11 +73,13 @@ public class UserService implements UserDetailsService {
         return userRepository.save(userEntity);
     }
 
-    public UserEntity saveUser(MultipartFile multipartFile, UserEntity userArgs) throws IOException {
-        if (multipartFile == null || multipartFile.isEmpty()) {
-            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_IMAGE_PARAM_NOT_FOUND);
+    public UserEntity saveUser(MultipartFile IDCardFront, MultipartFile IDCardBack, MultipartFile badge, UserEntity userArgs) throws IOException {
+        if (IDCardFront == null || IDCardBack == null || badge == null) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_PARAM_NOT_FOUND);
         }
-        userArgs.setImage(multipartFile.getBytes());
+        userArgs.setIDCardFront(IDCardFront.getBytes());
+        userArgs.setIDCardBack(IDCardBack.getBytes());
+        userArgs.setBadge(badge.getBytes());
         userArgs.setEnabled(false);
         return saveUser(userArgs, roleService.getRoleByName(ApplicationConfig.DEFAULT_USER_ROLE_NAME));
     }

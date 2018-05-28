@@ -10,6 +10,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping(value = "/users")
 public class UserController {
@@ -24,8 +26,8 @@ public class UserController {
     // 建立普通用户
     @PreAuthorize(value = "permitAll()")
     @PostMapping
-    public ResultEntity saveUser(@RequestParam(value = "image") MultipartFile multipartFile, UserEntity userArgs) {
-        return ResultService.resultBuilder(userService.saveUser(multipartFile, userArgs));
+    public ResultEntity saveUser(@RequestParam(value = "IDCardFront") MultipartFile IDCardFront, @RequestParam(value = "IDCardBack") MultipartFile IDCardBack, @RequestParam(value = "badge") MultipartFile badge, UserEntity userArgs) throws IOException {
+        return ResultService.resultBuilder(userService.saveUser(IDCardFront, IDCardBack, badge, userArgs));
     }
 
     // 建立管理员用户

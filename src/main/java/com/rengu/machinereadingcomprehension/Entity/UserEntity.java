@@ -22,9 +22,16 @@ public class UserEntity implements UserDetails, Serializable {
     private boolean accountNonLocked = true;
     private boolean credentialsNonExpired = true;
     private boolean enabled = true;
+    private String IDNumber;
     @Lob
     @Basic(fetch = FetchType.LAZY)
-    private byte[] image;
+    private byte[] IDCardFront;
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    private byte[] IDCardBack;
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    private byte[] badge;
     @ManyToMany(fetch = FetchType.EAGER)
     private List<RoleEntity> roleEntities;
     @OneToMany
@@ -109,12 +116,36 @@ public class UserEntity implements UserDetails, Serializable {
         this.enabled = enabled;
     }
 
-    public byte[] getImage() {
-        return image;
+    public String getIDNumber() {
+        return IDNumber;
     }
 
-    public void setImage(byte[] image) {
-        this.image = image;
+    public void setIDNumber(String IDNumber) {
+        this.IDNumber = IDNumber;
+    }
+
+    public byte[] getIDCardFront() {
+        return IDCardFront;
+    }
+
+    public void setIDCardFront(byte[] IDCardFront) {
+        this.IDCardFront = IDCardFront;
+    }
+
+    public byte[] getIDCardBack() {
+        return IDCardBack;
+    }
+
+    public void setIDCardBack(byte[] IDCardBack) {
+        this.IDCardBack = IDCardBack;
+    }
+
+    public byte[] getBadge() {
+        return badge;
+    }
+
+    public void setBadge(byte[] badge) {
+        this.badge = badge;
     }
 
     public List<RoleEntity> getRoleEntities() {
