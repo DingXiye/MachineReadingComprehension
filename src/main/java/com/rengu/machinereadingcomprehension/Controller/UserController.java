@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 @RestController
@@ -30,10 +30,9 @@ public class UserController {
     }
 
     // 建立普通用户
-    @PreAuthorize(value = "permitAll()")
     @PostMapping
-    public ResultEntity saveUser(@RequestParam(value = "badge") MultipartFile badge, UserEntity userArgs) throws IOException {
-        return ResultService.resultBuilder(userService.saveUser(badge, userArgs));
+    public ResultEntity saveUser(@RequestParam(value = "badge") MultipartFile badge, @RequestParam(value = "username") String username, @RequestParam(value = "password") String password, @RequestParam(value = "email") String email, @RequestParam(value = "telephoneNumber") String telephoneNumber, @RequestParam(value = "name") String name, @RequestParam(value = "age") int age, @RequestParam(value = "sex") int sex, @RequestParam(value = "teamName") String teamName, @RequestParam(value = "organization") String organization, @RequestParam(value = "job") String job) throws IOException {
+        return ResultService.resultBuilder(userService.saveUser(badge, username, password, email, telephoneNumber, name, age, sex, teamName, organization, job));
     }
 
     // 建立管理员用户
@@ -77,7 +76,7 @@ public class UserController {
         }
         httpServletResponse.setContentType("image/*");
         // 文件流输出
-        IOUtils.copy(new ByteArrayInputStream(userService.getUserById(userId).getBadge()), httpServletResponse.getOutputStream());
+        IOUtils.copy(new FileInputStream(userService.getUserById(userId).getBadgePath()), httpServletResponse.getOutputStream());
         httpServletResponse.flushBuffer();
     }
 

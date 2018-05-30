@@ -6,6 +6,8 @@ import com.rengu.machinereadingcomprehension.Entity.UserEntity;
 import com.rengu.machinereadingcomprehension.Repository.UserRepository;
 import com.rengu.machinereadingcomprehension.Utils.ApplicationConfig;
 import com.rengu.machinereadingcomprehension.Utils.MachineReadingComprehensionApplicationMessage;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,9 +18,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -72,6 +76,46 @@ public class UserService implements UserDetailsService {
         return userRepository.save(userEntity);
     }
 
+    public UserEntity saveUser(MultipartFile badge, String username, String password, String email, String telephoneNumber, String name, int age, int sex, String teamName, String organization, String job) throws IOException {
+        if (badge == null) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_IMAGE_PARAM_NOT_FOUND);
+        }
+        if (StringUtils.isEmpty(email)) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_EMAIL_PARAM_NOT_FOUND);
+        }
+        if (StringUtils.isEmpty(telephoneNumber)) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_TELEPHONENUMBER_PARAM_NOT_FOUND);
+        }
+        if (StringUtils.isEmpty(name)) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_NAME_PARAM_NOT_FOUND);
+        }
+        if (age == 0) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_AGE_PARAM_NOT_FOUND);
+        }
+        if (StringUtils.isEmpty(teamName)) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_TEAMNAME_PARAM_NOT_FOUND);
+        }
+        if (StringUtils.isEmpty(organization)) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ORGANIZATION_PARAM_NOT_FOUND);
+        }
+        if (StringUtils.isEmpty(job)) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_JOB_PARAM_NOT_FOUND);
+        }
+        UserEntity userArgs = new UserEntity();
+        userArgs.setUsername(username);
+        userArgs.setPassword(password);
+        userArgs.setEmail(email);
+        userArgs.setTelephoneNumber(telephoneNumber);
+        userArgs.setName(name);
+        userArgs.setAge(age);
+        userArgs.setSex(sex);
+        userArgs.setTeamName(teamName);
+        userArgs.setOrganization(organization);
+        userArgs.setJob(job);
+        userArgs.setEnabled(false);
+        return saveUser(badge, userArgs);
+    }
+
     public UserEntity saveUser(MultipartFile badge, UserEntity userArgs) throws IOException {
         if (badge == null) {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_IMAGE_PARAM_NOT_FOUND);
@@ -97,7 +141,10 @@ public class UserService implements UserDetailsService {
         if (StringUtils.isEmpty(userArgs.getJob())) {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_JOB_PARAM_NOT_FOUND);
         }
-        userArgs.setBadge(badge.getBytes());
+        // 保存已上传的图片
+        String badgePath = (FileUtils.getUserDirectoryPath() + "/user-badge/" + UUID.randomUUID() + "." + FilenameUtils.getExtension(badge.getOriginalFilename())).replace("\\", "/");
+        FileUtils.copyToFile(badge.getInputStream(), new File(badgePath));
+        userArgs.setBadgePath(badgePath);
         userArgs.setEnabled(false);
         return saveUser(userArgs, roleService.getRoleByName(ApplicationConfig.DEFAULT_USER_ROLE_NAME));
     }

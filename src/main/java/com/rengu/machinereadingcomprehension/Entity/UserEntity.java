@@ -1,12 +1,14 @@
 package com.rengu.machinereadingcomprehension.Entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import java.io.Serializable;
 import java.util.*;
 
@@ -31,10 +33,7 @@ public class UserEntity implements UserDetails, Serializable {
     private boolean accountNonLocked = true;
     private boolean credentialsNonExpired = true;
     private boolean enabled = true;
-    @JsonIgnore
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    private byte[] badge;
+    private String badgePath;
     @ManyToMany(fetch = FetchType.EAGER)
     private List<RoleEntity> roleEntities;
 
@@ -194,12 +193,12 @@ public class UserEntity implements UserDetails, Serializable {
         this.enabled = enabled;
     }
 
-    public byte[] getBadge() {
-        return badge;
+    public String getBadgePath() {
+        return badgePath;
     }
 
-    public void setBadge(byte[] badge) {
-        this.badge = badge;
+    public void setBadgePath(String badgePath) {
+        this.badgePath = badgePath;
     }
 
     public List<RoleEntity> getRoleEntities() {
