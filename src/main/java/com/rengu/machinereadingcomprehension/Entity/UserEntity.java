@@ -1,6 +1,7 @@
 package com.rengu.machinereadingcomprehension.Entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,24 +19,24 @@ public class UserEntity implements UserDetails, Serializable {
     private Date createTime = new Date();
     private String username;
     private String password;
+    private String email;
+    private String telephoneNumber;
+    private String name;
+    private int age;
+    private int sex;
+    private String teamName;
+    private String organization;
+    private String job;
     private boolean accountNonExpired = true;
     private boolean accountNonLocked = true;
     private boolean credentialsNonExpired = true;
     private boolean enabled = true;
-    private String IDNumber;
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    private byte[] IDCardFront;
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    private byte[] IDCardBack;
+    @JsonIgnore
     @Lob
     @Basic(fetch = FetchType.LAZY)
     private byte[] badge;
     @ManyToMany(fetch = FetchType.EAGER)
     private List<RoleEntity> roleEntities;
-    @OneToMany
-    private List<CrewEntity> crewEntities;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -44,6 +45,19 @@ public class UserEntity implements UserDetails, Serializable {
             grantedAuthorityList.add(new SimpleGrantedAuthority("ROLE_" + roleEntity.getName()));
         }
         return grantedAuthorityList;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserEntity that = (UserEntity) o;
+        return Objects.equals(username, that.username);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(username);
     }
 
     public String getId() {
@@ -78,6 +92,70 @@ public class UserEntity implements UserDetails, Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getTelephoneNumber() {
+        return telephoneNumber;
+    }
+
+    public void setTelephoneNumber(String telephoneNumber) {
+        this.telephoneNumber = telephoneNumber;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public int getSex() {
+        return sex;
+    }
+
+    public void setSex(int sex) {
+        this.sex = sex;
+    }
+
+    public String getTeamName() {
+        return teamName;
+    }
+
+    public void setTeamName(String teamName) {
+        this.teamName = teamName;
+    }
+
+    public String getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(String organization) {
+        this.organization = organization;
+    }
+
+    public String getJob() {
+        return job;
+    }
+
+    public void setJob(String job) {
+        this.job = job;
     }
 
     @Override
@@ -116,30 +194,6 @@ public class UserEntity implements UserDetails, Serializable {
         this.enabled = enabled;
     }
 
-    public String getIDNumber() {
-        return IDNumber;
-    }
-
-    public void setIDNumber(String IDNumber) {
-        this.IDNumber = IDNumber;
-    }
-
-    public byte[] getIDCardFront() {
-        return IDCardFront;
-    }
-
-    public void setIDCardFront(byte[] IDCardFront) {
-        this.IDCardFront = IDCardFront;
-    }
-
-    public byte[] getIDCardBack() {
-        return IDCardBack;
-    }
-
-    public void setIDCardBack(byte[] IDCardBack) {
-        this.IDCardBack = IDCardBack;
-    }
-
     public byte[] getBadge() {
         return badge;
     }
@@ -154,26 +208,5 @@ public class UserEntity implements UserDetails, Serializable {
 
     public void setRoleEntities(List<RoleEntity> roleEntities) {
         this.roleEntities = roleEntities;
-    }
-
-    public List<CrewEntity> getCrewEntities() {
-        return crewEntities;
-    }
-
-    public void setCrewEntities(List<CrewEntity> crewEntities) {
-        this.crewEntities = crewEntities;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UserEntity that = (UserEntity) o;
-        return Objects.equals(username, that.username);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(username);
     }
 }

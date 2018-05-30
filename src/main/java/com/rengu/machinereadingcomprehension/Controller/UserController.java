@@ -5,11 +5,17 @@ import com.rengu.machinereadingcomprehension.Entity.ResultEntity;
 import com.rengu.machinereadingcomprehension.Entity.UserEntity;
 import com.rengu.machinereadingcomprehension.Service.ResultService;
 import com.rengu.machinereadingcomprehension.Service.UserService;
+import com.rengu.machinereadingcomprehension.Utils.MachineReadingComprehensionApplicationMessage;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 @RestController
@@ -26,8 +32,8 @@ public class UserController {
     // 建立普通用户
     @PreAuthorize(value = "permitAll()")
     @PostMapping
-    public ResultEntity saveUser(@RequestParam(value = "IDCardFront") MultipartFile IDCardFront, @RequestParam(value = "IDCardBack") MultipartFile IDCardBack, @RequestParam(value = "badge") MultipartFile badge, UserEntity userArgs) throws IOException {
-        return ResultService.resultBuilder(userService.saveUser(IDCardFront, IDCardBack, badge, userArgs));
+    public ResultEntity saveUser(@RequestParam(value = "badge") MultipartFile badge, UserEntity userArgs) throws IOException {
+        return ResultService.resultBuilder(userService.saveUser(badge, userArgs));
     }
 
     // 建立管理员用户
@@ -63,6 +69,18 @@ public class UserController {
         return ResultService.resultBuilder(userService.getUserById(userId));
     }
 
+    // 查看用户证件
+    @GetMapping(value = "/{userId}/badge")
+    public void getUserBadge(HttpServletResponse httpServletResponse, @PathVariable(value = "userId") String userId) throws IOException {
+        if (StringUtils.isEmpty(userId)) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ID_PARAM_NOT_FOUND);
+        }
+        httpServletResponse.setContentType("image/*");
+        // 文件流输出
+        IOUtils.copy(new ByteArrayInputStream(userService.getUserById(userId).getBadge()), httpServletResponse.getOutputStream());
+        httpServletResponse.flushBuffer();
+    }
+
     // 查看所有用户
     @PreAuthorize(value = "hasRole('admin')")
     @GetMapping
@@ -80,5 +98,15 @@ public class UserController {
     @DeleteMapping(value = "/{userId}/crew/{crewId}")
     public ResultEntity deleteCrew(@PathVariable(value = "userId") String userId, @PathVariable(value = "crewId") String crewId) {
         return ResultService.resultBuilder(userService.deleteCrew(userId, crewId));
+    }
+
+    @GetMapping(value = "/{userId}/crew")
+    public ResultEntity getCrewByUserId(@PathVariable(value = "userId") String userId) {
+        return ResultService.resultBuilder(userService.getCrewByUserId(userId));
+    }
+
+    @GetMapping(value = "/login")
+    public ResultEntity userLogin(@AuthenticationPrincipal UserEntity loginUser) {
+        return ResultService.resultBuilder(loginUser);
     }
 }

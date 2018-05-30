@@ -17,7 +17,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -61,24 +60,43 @@ public class UserService implements UserDetailsService {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_USERNAME_PARAM_NOT_FOUND);
         }
         if (hasUserByUsername(userArgs.getUsername())) {
-            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_NAME_EXISTS);
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_USERNAME_EXISTS);
         }
         if (StringUtils.isEmpty(userArgs.getPassword())) {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_PASSWORD_PARAM_NOT_FOUND);
         }
         UserEntity userEntity = new UserEntity();
-        BeanUtils.copyProperties(userArgs, userEntity, "id", "createTime", "password", "accountNonExpired", "accountNonLocked", "credentialsNonExpired", "roleEntities");
+        BeanUtils.copyProperties(userArgs, userEntity, "id", "createTime", "password", "accountNonExpired", "accountNonLocked", "credentialsNonExpired", "roleEntities", "crewEntities");
         userEntity.setPassword(new BCryptPasswordEncoder().encode(userArgs.getPassword()));
         userEntity.setRoleEntities(Arrays.asList(roleEntities));
         return userRepository.save(userEntity);
     }
 
-    public UserEntity saveUser(MultipartFile IDCardFront, MultipartFile IDCardBack, MultipartFile badge, UserEntity userArgs) throws IOException {
-        if (IDCardFront == null || IDCardBack == null || badge == null) {
-            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_PARAM_NOT_FOUND);
+    public UserEntity saveUser(MultipartFile badge, UserEntity userArgs) throws IOException {
+        if (badge == null) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_IMAGE_PARAM_NOT_FOUND);
         }
-        userArgs.setIDCardFront(IDCardFront.getBytes());
-        userArgs.setIDCardBack(IDCardBack.getBytes());
+        if (StringUtils.isEmpty(userArgs.getEmail())) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_EMAIL_PARAM_NOT_FOUND);
+        }
+        if (StringUtils.isEmpty(userArgs.getTelephoneNumber())) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_TELEPHONENUMBER_PARAM_NOT_FOUND);
+        }
+        if (StringUtils.isEmpty(userArgs.getName())) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_NAME_PARAM_NOT_FOUND);
+        }
+        if (userArgs.getAge() == 0) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_AGE_PARAM_NOT_FOUND);
+        }
+        if (StringUtils.isEmpty(userArgs.getTeamName())) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_TEAMNAME_PARAM_NOT_FOUND);
+        }
+        if (StringUtils.isEmpty(userArgs.getOrganization())) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ORGANIZATION_PARAM_NOT_FOUND);
+        }
+        if (StringUtils.isEmpty(userArgs.getJob())) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_JOB_PARAM_NOT_FOUND);
+        }
         userArgs.setBadge(badge.getBytes());
         userArgs.setEnabled(false);
         return saveUser(userArgs, roleService.getRoleByName(ApplicationConfig.DEFAULT_USER_ROLE_NAME));
@@ -131,23 +149,24 @@ public class UserService implements UserDetailsService {
         return userRepository.save(userEntity);
     }
 
-    public UserEntity saveCrew(String userId, CrewEntity crewArgs) {
+    public CrewEntity saveCrew(String userId, CrewEntity crewArgs) {
         if (StringUtils.isEmpty(userId)) {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ID_PARAM_NOT_FOUND);
         }
-        UserEntity userEntity = getUserById(userId);
-        List<CrewEntity> crewEntityList = userEntity.getCrewEntities() == null ? new ArrayList<>() : userEntity.getCrewEntities();
-        crewEntityList.add(crewService.saveCrew(crewArgs));
-        return userRepository.save(userEntity);
+        return crewService.saveCrew(getUserById(userId), crewArgs);
     }
 
-    public UserEntity deleteCrew(String userId, String crewId) {
+    public CrewEntity deleteCrew(String userId, String crewId) {
         if (StringUtils.isEmpty(userId)) {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ID_PARAM_NOT_FOUND);
         }
-        UserEntity userEntity = getUserById(userId);
-        List<CrewEntity> crewEntityList = userEntity.getCrewEntities() == null ? new ArrayList<>() : userEntity.getCrewEntities();
-        crewEntityList.remove(crewService.deleteCrew(crewId));
-        return userRepository.save(userEntity);
+        return crewService.deleteCrew(crewId);
+    }
+
+    public List<CrewEntity> getCrewByUserId(String userId) {
+        if (StringUtils.isEmpty(userId)) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ID_PARAM_NOT_FOUND);
+        }
+        return crewService.getCrewByUserId(userId);
     }
 }
