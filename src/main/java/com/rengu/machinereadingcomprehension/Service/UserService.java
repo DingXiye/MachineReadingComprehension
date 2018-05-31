@@ -187,6 +187,10 @@ public class UserService implements UserDetailsService {
         return userRepository.findAll();
     }
 
+    public List<UserEntity> getUserByEnabled(boolean enabled) {
+        return userRepository.findByEnabled(enabled).get();
+    }
+
     public UserEntity patchUserEnable(String userId) {
         if (StringUtils.isEmpty(userId)) {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ID_PARAM_NOT_FOUND);

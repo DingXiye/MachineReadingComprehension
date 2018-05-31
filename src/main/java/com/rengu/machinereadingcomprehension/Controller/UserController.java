@@ -71,6 +71,20 @@ public class UserController {
         return ResultService.resultBuilder(userService.getUserById(userId));
     }
 
+    // 查看所有用户
+    @PreAuthorize(value = "hasRole('admin')")
+    @GetMapping
+    public ResultEntity getUser() {
+        return ResultService.resultBuilder(userService.getUser());
+    }
+
+    // 查看所有用户
+    @PreAuthorize(value = "hasRole('admin')")
+    @GetMapping(value = "/byenabled")
+    public ResultEntity getUserByEnabled(@RequestParam(value = "enabled") boolean enabled) {
+        return ResultService.resultBuilder(userService.getUserByEnabled(enabled));
+    }
+
     // 查看用户证件
     @GetMapping(value = "/{userId}/badge")
     public void getUserBadge(HttpServletResponse httpServletResponse, @PathVariable(value = "userId") String userId) throws IOException {
@@ -84,13 +98,6 @@ public class UserController {
         IOUtils.copy(new FileInputStream(userEntity.getBadgePath()), httpServletResponse.getOutputStream());
         httpServletResponse.flushBuffer();
 //        return ResponseEntity.ok(resourceLoader.getResource("file:" + userEntity.getBadgePath()));
-    }
-
-    // 查看所有用户
-    @PreAuthorize(value = "hasRole('admin')")
-    @GetMapping
-    public ResultEntity getUser() {
-        return ResultService.resultBuilder(userService.getUser());
     }
 
     // 保存团队成员
