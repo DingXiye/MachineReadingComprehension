@@ -6,8 +6,9 @@ import com.rengu.machinereadingcomprehension.Entity.UserEntity;
 import com.rengu.machinereadingcomprehension.Service.ResultService;
 import com.rengu.machinereadingcomprehension.Service.UserService;
 import com.rengu.machinereadingcomprehension.Utils.MachineReadingComprehensionApplicationMessage;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.StringUtils;
@@ -23,10 +24,12 @@ import java.io.IOException;
 public class UserController {
 
     private final UserService userService;
+    private final ResourceLoader resourceLoader;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, ResourceLoader resourceLoader) {
         this.userService = userService;
+        this.resourceLoader = resourceLoader;
     }
 
     // 建立普通用户
@@ -74,10 +77,13 @@ public class UserController {
         if (StringUtils.isEmpty(userId)) {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ID_PARAM_NOT_FOUND);
         }
+        UserEntity userEntity = userService.getUserById(userId);
+        httpServletResponse.reset();
         httpServletResponse.setContentType("image/*");
         // 文件流输出
-        IOUtils.copy(new FileInputStream(userService.getUserById(userId).getBadgePath()), httpServletResponse.getOutputStream());
+        IOUtils.copy(new FileInputStream(userEntity.getBadgePath()), httpServletResponse.getOutputStream());
         httpServletResponse.flushBuffer();
+//        return ResponseEntity.ok(resourceLoader.getResource("file:" + userEntity.getBadgePath()));
     }
 
     // 查看所有用户
