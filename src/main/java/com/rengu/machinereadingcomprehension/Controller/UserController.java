@@ -78,7 +78,7 @@ public class UserController {
         return ResultService.resultBuilder(userService.getUser());
     }
 
-    // 查看所有用户
+    // 更具账户状态查询
     @PreAuthorize(value = "hasRole('admin')")
     @GetMapping(value = "/byenabled")
     public ResultEntity getUserByEnabled(@RequestParam(value = "enabled") boolean enabled) {
@@ -101,6 +101,7 @@ public class UserController {
     }
 
     // 保存团队成员
+
     @PostMapping(value = "/{userId}/crew")
     public ResultEntity saveCrew(@PathVariable(value = "userId") String userId, CrewEntity crewArgs) {
         return ResultService.resultBuilder(userService.saveCrew(userId, crewArgs));

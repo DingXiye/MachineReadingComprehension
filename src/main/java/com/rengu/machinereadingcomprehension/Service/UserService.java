@@ -20,9 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -188,7 +186,16 @@ public class UserService implements UserDetailsService {
     }
 
     public List<UserEntity> getUserByEnabled(boolean enabled) {
-        return userRepository.findByEnabled(enabled).get();
+        List<UserEntity> userEntities = userRepository.findByEnabled(enabled).isPresent() ? userRepository.findByEnabled(enabled).get() : new ArrayList<>();
+        Iterator<UserEntity> userEntityIterator = userEntities.iterator();
+        while (userEntityIterator.hasNext()) {
+            for (RoleEntity roleEntity : userEntityIterator.next().getRoleEntities()) {
+                if (roleEntity.getName().equals(ApplicationConfig.DEFAULT_ADMIN_ROLE_NAME)) {
+                    userEntityIterator.remove();
+                }
+            }
+        }
+        return userEntities;
     }
 
     public UserEntity patchUserEnable(String userId) {
