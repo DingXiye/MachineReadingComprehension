@@ -55,7 +55,6 @@ public class UserController {
     }
 
     //修改用户
-    @PreAuthorize(value = "hasRole('accept')")
     @PatchMapping(value = "/{userId}")
     public ResultEntity patchUser(@PathVariable(value = "userId") String userId, UserEntity userArgs) {
         return ResultService.resultBuilder(userService.patchUser(userId, userArgs));
@@ -68,7 +67,6 @@ public class UserController {
     }
 
     // 重新提交
-    @PreAuthorize(value = "hasRole('denied')")
     @PatchMapping(value = "/{userId}/recommit")
     public ResultEntity recommit(@PathVariable(value = "userId") String userId, @RequestParam(value = "badge") MultipartFile badge, UserEntity userArgs) throws IOException {
         return ResultService.resultBuilder(userService.recommit(userId, badge, userArgs));
@@ -125,20 +123,17 @@ public class UserController {
     }
 
     // 保存团队成员
-    @PreAuthorize(value = "hasRole('accept')")
     @PostMapping(value = "/{userId}/crew")
     public ResultEntity saveCrew(@PathVariable(value = "userId") String userId, CrewEntity crewArgs) {
         return ResultService.resultBuilder(userService.saveCrew(userId, crewArgs));
     }
 
     // 删除团队成员
-    @PreAuthorize(value = "hasRole('accept')")
     @DeleteMapping(value = "/{userId}/crew/{crewId}")
     public ResultEntity deleteCrew(@PathVariable(value = "userId") String userId, @PathVariable(value = "crewId") String crewId) {
         return ResultService.resultBuilder(userService.deleteCrew(userId, crewId));
     }
 
-    @PreAuthorize(value = "hasRole('accept')")
     @GetMapping(value = "/{userId}/crew")
     public ResultEntity getCrewByUserId(@PathVariable(value = "userId") String userId) {
         return ResultService.resultBuilder(userService.getCrewByUserId(userId));

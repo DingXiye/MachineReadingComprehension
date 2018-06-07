@@ -126,7 +126,6 @@ public class UserService implements UserDetailsService {
         userArgs.setSex(sex);
         userArgs.setTeamName(teamName);
         userArgs.setOrganization(organization);
-        userArgs.setEnabled(false);
         return saveUser(badge, userArgs);
     }
 
