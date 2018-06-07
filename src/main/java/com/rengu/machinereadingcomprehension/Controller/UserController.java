@@ -8,7 +8,6 @@ import com.rengu.machinereadingcomprehension.Service.UserService;
 import com.rengu.machinereadingcomprehension.Utils.MachineReadingComprehensionApplicationMessage;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -41,7 +40,6 @@ public class UserController {
     }
 
     // 建立管理员用户
-    @PreAuthorize(value = "hasRole('admin')")
     @PostMapping(value = "/admin")
     public ResultEntity saveAdminUser(UserEntity userArgs) {
         return ResultService.resultBuilder(userService.saveAdminUser(userArgs));
@@ -67,20 +65,18 @@ public class UserController {
     }
 
     // 重新提交
-    @PatchMapping(value = "/{userId}/recommit")
-    public ResultEntity recommit(@PathVariable(value = "userId") String userId, @RequestParam(value = "badge") MultipartFile badge, UserEntity userArgs) throws IOException {
+    @PostMapping(value = "/{userId}/recommit")
+    public ResultEntity recommit(@PathVariable(value = "userId") String userId, @RequestParam(value = "badge", required = false) MultipartFile badge, UserEntity userArgs) throws IOException {
         return ResultService.resultBuilder(userService.recommit(userId, badge, userArgs));
     }
 
     // 审核通过
-    @PreAuthorize(value = "hasRole('admin')")
     @PatchMapping(value = "/{userId}/accept")
     public ResultEntity patchUserAccept(@PathVariable(value = "userId") String userId) {
         return ResultService.resultBuilder(userService.patchUserAccept(userId));
     }
 
     // 审核未通过
-    @PreAuthorize(value = "hasRole('admin')")
     @PatchMapping(value = "/{userId}/denied")
     public ResultEntity patchUser(@PathVariable(value = "userId") String userId, @RequestParam(value = "message") String message) {
         return ResultService.resultBuilder(userService.patchUserDenied(userId, message));
@@ -93,21 +89,18 @@ public class UserController {
     }
 
     // 查看所有用户
-    @PreAuthorize(value = "hasRole('admin')")
     @GetMapping
     public ResultEntity getUser() {
         return ResultService.resultBuilder(userService.getUser());
     }
 
     // 根据角色查看用户
-    @PreAuthorize(value = "hasRole('admin')")
     @GetMapping(value = "/byRoleName")
     public ResultEntity getUserByRoleName(@RequestParam(value = "rolename") String rolename) {
         return ResultService.resultBuilder(userService.getUserByRoleName(rolename));
     }
 
     // 查看用户证件
-    @PreAuthorize(value = "hasRole('admin')")
     @GetMapping(value = "/{userId}/badge")
     public void getUserBadge(HttpServletResponse httpServletResponse, @PathVariable(value = "userId") String userId) throws IOException {
         if (StringUtils.isEmpty(userId)) {
