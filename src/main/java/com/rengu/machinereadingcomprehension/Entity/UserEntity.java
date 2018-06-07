@@ -19,6 +19,7 @@ public class UserEntity implements UserDetails, Serializable {
     private String id = UUID.randomUUID().toString();
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime = new Date();
+    private String message;
     private String username;
     private String password;
     private String email;
@@ -28,7 +29,6 @@ public class UserEntity implements UserDetails, Serializable {
     private int sex;
     private String teamName;
     private String organization;
-    private String job;
     private boolean accountNonExpired = true;
     private boolean accountNonLocked = true;
     private boolean credentialsNonExpired = true;
@@ -73,6 +73,14 @@ public class UserEntity implements UserDetails, Serializable {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     @Override
@@ -147,14 +155,6 @@ public class UserEntity implements UserDetails, Serializable {
 
     public void setOrganization(String organization) {
         this.organization = organization;
-    }
-
-    public String getJob() {
-        return job;
-    }
-
-    public void setJob(String job) {
-        this.job = job;
     }
 
     @Override

@@ -8,7 +8,6 @@ import com.rengu.machinereadingcomprehension.Service.UserService;
 import com.rengu.machinereadingcomprehension.Utils.MachineReadingComprehensionApplicationMessage;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.StringUtils;
@@ -24,18 +23,21 @@ import java.io.IOException;
 public class UserController {
 
     private final UserService userService;
-    private final ResourceLoader resourceLoader;
 
     @Autowired
-    public UserController(UserService userService, ResourceLoader resourceLoader) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.resourceLoader = resourceLoader;
+    }
+
+    @GetMapping(value = "/login")
+    public ResultEntity userLogin(@AuthenticationPrincipal UserEntity loginUser) {
+        return ResultService.resultBuilder(loginUser);
     }
 
     // 建立普通用户
     @PostMapping
-    public ResultEntity saveUser(@RequestParam(value = "badge") MultipartFile badge, @RequestParam(value = "username") String username, @RequestParam(value = "password") String password, @RequestParam(value = "email") String email, @RequestParam(value = "telephoneNumber") String telephoneNumber, @RequestParam(value = "name") String name, @RequestParam(value = "age") int age, @RequestParam(value = "sex") int sex, @RequestParam(value = "teamName") String teamName, @RequestParam(value = "organization") String organization, @RequestParam(value = "job") String job) throws IOException {
-        return ResultService.resultBuilder(userService.saveUser(badge, username, password, email, telephoneNumber, name, age, sex, teamName, organization, job));
+    public ResultEntity saveUser(@RequestParam(value = "badge") MultipartFile badge, @RequestParam(value = "username") String username, @RequestParam(value = "password") String password, @RequestParam(value = "email") String email, @RequestParam(value = "telephoneNumber") String telephoneNumber, @RequestParam(value = "name") String name, @RequestParam(value = "age") int age, @RequestParam(value = "sex") int sex, @RequestParam(value = "teamName") String teamName, @RequestParam(value = "organization") String organization) throws IOException {
+        return ResultService.resultBuilder(userService.saveUser(badge, username, password, email, telephoneNumber, name, age, sex, teamName, organization));
     }
 
     // 建立管理员用户
@@ -52,17 +54,38 @@ public class UserController {
         return ResultService.resultBuilder(userId + "删除成功");
     }
 
-    // 修改用户
+    //修改用户
+    @PreAuthorize(value = "hasRole('accept')")
     @PatchMapping(value = "/{userId}")
     public ResultEntity patchUser(@PathVariable(value = "userId") String userId, UserEntity userArgs) {
         return ResultService.resultBuilder(userService.patchUser(userId, userArgs));
     }
 
-    // 修改账户状态
+    // 修改用户密码
+    @PatchMapping(value = "/{userId}/password")
+    public ResultEntity patchUserPassword(@PathVariable(value = "userId") String userId, UserEntity userArgs) {
+        return ResultService.resultBuilder(userService.patchUserPassword(userId, userArgs));
+    }
+
+    // 重新提交
+    @PreAuthorize(value = "hasRole('denied')")
+    @PatchMapping(value = "/{userId}/recommit")
+    public ResultEntity recommit(@PathVariable(value = "userId") String userId, @RequestParam(value = "badge") MultipartFile badge, UserEntity userArgs) throws IOException {
+        return ResultService.resultBuilder(userService.recommit(userId, badge, userArgs));
+    }
+
+    // 审核通过
     @PreAuthorize(value = "hasRole('admin')")
-    @PatchMapping(value = "/{userId}/enable")
-    public ResultEntity patchUserEnable(@PathVariable(value = "userId") String userId) {
-        return ResultService.resultBuilder(userService.patchUserEnable(userId));
+    @PatchMapping(value = "/{userId}/accept")
+    public ResultEntity patchUserAccept(@PathVariable(value = "userId") String userId) {
+        return ResultService.resultBuilder(userService.patchUserAccept(userId));
+    }
+
+    // 审核未通过
+    @PreAuthorize(value = "hasRole('admin')")
+    @PatchMapping(value = "/{userId}/denied")
+    public ResultEntity patchUser(@PathVariable(value = "userId") String userId, @RequestParam(value = "message") String message) {
+        return ResultService.resultBuilder(userService.patchUserDenied(userId, message));
     }
 
     // 查看用户
@@ -78,14 +101,15 @@ public class UserController {
         return ResultService.resultBuilder(userService.getUser());
     }
 
-    // 更具账户状态查询
+    // 根据角色查看用户
     @PreAuthorize(value = "hasRole('admin')")
-    @GetMapping(value = "/byenabled")
-    public ResultEntity getUserByEnabled(@RequestParam(value = "enabled") boolean enabled) {
-        return ResultService.resultBuilder(userService.getUserByEnabled(enabled));
+    @GetMapping(value = "/byRoleName")
+    public ResultEntity getUserByRoleName(@RequestParam(value = "rolename") String rolename) {
+        return ResultService.resultBuilder(userService.getUserByRoleName(rolename));
     }
 
     // 查看用户证件
+    @PreAuthorize(value = "hasRole('admin')")
     @GetMapping(value = "/{userId}/badge")
     public void getUserBadge(HttpServletResponse httpServletResponse, @PathVariable(value = "userId") String userId) throws IOException {
         if (StringUtils.isEmpty(userId)) {
@@ -93,33 +117,30 @@ public class UserController {
         }
         UserEntity userEntity = userService.getUserById(userId);
         httpServletResponse.reset();
+        httpServletResponse.addHeader("Access-Control-Allow-Origin", "*");
         httpServletResponse.setContentType("image/*");
         // 文件流输出
         IOUtils.copy(new FileInputStream(userEntity.getBadgePath()), httpServletResponse.getOutputStream());
         httpServletResponse.flushBuffer();
-//        return ResponseEntity.ok(resourceLoader.getResource("file:" + userEntity.getBadgePath()));
     }
 
     // 保存团队成员
-
+    @PreAuthorize(value = "hasRole('accept')")
     @PostMapping(value = "/{userId}/crew")
     public ResultEntity saveCrew(@PathVariable(value = "userId") String userId, CrewEntity crewArgs) {
         return ResultService.resultBuilder(userService.saveCrew(userId, crewArgs));
     }
 
     // 删除团队成员
+    @PreAuthorize(value = "hasRole('accept')")
     @DeleteMapping(value = "/{userId}/crew/{crewId}")
     public ResultEntity deleteCrew(@PathVariable(value = "userId") String userId, @PathVariable(value = "crewId") String crewId) {
         return ResultService.resultBuilder(userService.deleteCrew(userId, crewId));
     }
 
+    @PreAuthorize(value = "hasRole('accept')")
     @GetMapping(value = "/{userId}/crew")
     public ResultEntity getCrewByUserId(@PathVariable(value = "userId") String userId) {
         return ResultService.resultBuilder(userService.getCrewByUserId(userId));
-    }
-
-    @GetMapping(value = "/login")
-    public ResultEntity userLogin(@AuthenticationPrincipal UserEntity loginUser) {
-        return ResultService.resultBuilder(loginUser);
     }
 }

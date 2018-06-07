@@ -51,6 +51,13 @@ public class UserService implements UserDetailsService {
         return userRepository.findByUsername(username).isPresent();
     }
 
+    public boolean hasUserByTeamName(String teamName) {
+        if (StringUtils.isEmpty(teamName)) {
+            return false;
+        }
+        return userRepository.findByTeamName(teamName).isPresent();
+    }
+
     public UserEntity saveUser(UserEntity userArgs, RoleEntity... roleEntities) {
         if (roleEntities == null || roleEntities.length == 0) {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ROLE_PARAM_NOT_FOUND);
@@ -67,6 +74,9 @@ public class UserService implements UserDetailsService {
         if (StringUtils.isEmpty(userArgs.getPassword())) {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_PASSWORD_PARAM_NOT_FOUND);
         }
+        if (hasUserByTeamName(userArgs.getTeamName())) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_TEAM_NAME_EXISTS);
+        }
         UserEntity userEntity = new UserEntity();
         BeanUtils.copyProperties(userArgs, userEntity, "id", "createTime", "password", "accountNonExpired", "accountNonLocked", "credentialsNonExpired", "roleEntities", "crewEntities");
         userEntity.setPassword(new BCryptPasswordEncoder().encode(userArgs.getPassword()));
@@ -74,7 +84,7 @@ public class UserService implements UserDetailsService {
         return userRepository.save(userEntity);
     }
 
-    public UserEntity saveUser(MultipartFile badge, String username, String password, String email, String telephoneNumber, String name, int age, int sex, String teamName, String organization, String job) throws IOException {
+    public UserEntity saveUser(MultipartFile badge, String username, String password, String email, String telephoneNumber, String name, int age, int sex, String teamName, String organization) throws IOException {
         if (badge == null) {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_IMAGE_PARAM_NOT_FOUND);
         }
@@ -96,9 +106,6 @@ public class UserService implements UserDetailsService {
         if (StringUtils.isEmpty(organization)) {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ORGANIZATION_PARAM_NOT_FOUND);
         }
-        if (StringUtils.isEmpty(job)) {
-            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_JOB_PARAM_NOT_FOUND);
-        }
         UserEntity userArgs = new UserEntity();
         userArgs.setUsername(username);
         userArgs.setPassword(password);
@@ -109,7 +116,6 @@ public class UserService implements UserDetailsService {
         userArgs.setSex(sex);
         userArgs.setTeamName(teamName);
         userArgs.setOrganization(organization);
-        userArgs.setJob(job);
         userArgs.setEnabled(false);
         return saveUser(badge, userArgs);
     }
@@ -136,19 +142,14 @@ public class UserService implements UserDetailsService {
         if (StringUtils.isEmpty(userArgs.getOrganization())) {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ORGANIZATION_PARAM_NOT_FOUND);
         }
-        if (StringUtils.isEmpty(userArgs.getJob())) {
-            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_JOB_PARAM_NOT_FOUND);
-        }
         // 保存已上传的图片
         String badgePath = (FileUtils.getUserDirectoryPath() + "/user-badge/" + UUID.randomUUID() + "." + FilenameUtils.getExtension(badge.getOriginalFilename())).replace("\\", "/");
         FileUtils.copyToFile(badge.getInputStream(), new File(badgePath));
         userArgs.setBadgePath(badgePath);
-        userArgs.setEnabled(false);
         return saveUser(userArgs, roleService.getRoleByName(ApplicationConfig.DEFAULT_USER_ROLE_NAME));
     }
 
     public UserEntity saveAdminUser(UserEntity userArgs) {
-        userArgs.setEnabled(true);
         return saveUser(userArgs, roleService.getRoleByName(ApplicationConfig.DEFAULT_ADMIN_ROLE_NAME), roleService.getRoleByName(ApplicationConfig.DEFAULT_USER_ROLE_NAME));
     }
 
@@ -167,11 +168,58 @@ public class UserService implements UserDetailsService {
         if (userArgs == null) {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_PARAM_NOT_FOUND);
         }
+        // 修改电话
+        if (!StringUtils.isEmpty(userArgs.getTelephoneNumber())) {
+            userEntity.setTelephoneNumber(userArgs.getTelephoneNumber());
+        }
+        // 修改邮件地址
+        if (!StringUtils.isEmpty(userArgs.getEmail())) {
+            userEntity.setEmail(userArgs.getEmail());
+        }
+        return userRepository.save(userEntity);
+    }
+
+    public UserEntity patchUserPassword(String userId, UserEntity userArgs) {
+        if (StringUtils.isEmpty(userId)) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ID_PARAM_NOT_FOUND);
+        }
+        UserEntity userEntity = getUserById(userId);
+        if (userArgs == null) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_PARAM_NOT_FOUND);
+        }
         if (StringUtils.isEmpty(userArgs.getPassword())) {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_PASSWORD_PARAM_NOT_FOUND);
         }
         userEntity.setPassword(new BCryptPasswordEncoder().encode(userArgs.getPassword()));
         return userRepository.save(userEntity);
+    }
+
+    public UserEntity recommit(String userId, MultipartFile badge, UserEntity userArgs) throws IOException {
+        if (StringUtils.isEmpty(userId)) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ID_PARAM_NOT_FOUND);
+        }
+        UserEntity userEntity = getUserById(userId);
+        if (badge != null || !badge.isEmpty()) {
+            String badgePath = (FileUtils.getUserDirectoryPath() + "/user-badge/" + UUID.randomUUID() + "." + FilenameUtils.getExtension(badge.getOriginalFilename())).replace("\\", "/");
+            FileUtils.copyToFile(badge.getInputStream(), new File(badgePath));
+            userArgs.setBadgePath(badgePath);
+        }
+        if (!StringUtils.isEmpty(userArgs.getEmail())) {
+            userEntity.setEmail(userArgs.getEmail());
+        }
+        if (!StringUtils.isEmpty(userArgs.getTelephoneNumber())) {
+            userEntity.setTelephoneNumber(userArgs.getTelephoneNumber());
+        }
+        if (!StringUtils.isEmpty(userArgs.getName())) {
+            userEntity.setName(userArgs.getName());
+        }
+        if (!StringUtils.isEmpty(userArgs.getTeamName())) {
+            userEntity.setTeamName(userArgs.getTeamName());
+        }
+        if (!StringUtils.isEmpty(userArgs.getOrganization())) {
+            userEntity.setOrganization(userArgs.getOrganization());
+        }
+        return saveUser(userArgs, roleService.getRoleByName(ApplicationConfig.DEFAULT_USER_ROLE_NAME));
     }
 
     public UserEntity getUserById(String userId) {
@@ -185,26 +233,40 @@ public class UserService implements UserDetailsService {
         return userRepository.findAll();
     }
 
-    public List<UserEntity> getUserByEnabled(boolean enabled) {
-        List<UserEntity> userEntities = userRepository.findByEnabled(enabled).isPresent() ? userRepository.findByEnabled(enabled).get() : new ArrayList<>();
-        Iterator<UserEntity> userEntityIterator = userEntities.iterator();
-        while (userEntityIterator.hasNext()) {
-            for (RoleEntity roleEntity : userEntityIterator.next().getRoleEntities()) {
-                if (roleEntity.getName().equals(ApplicationConfig.DEFAULT_ADMIN_ROLE_NAME)) {
-                    userEntityIterator.remove();
-                }
-            }
-        }
-        return userEntities;
-    }
-
-    public UserEntity patchUserEnable(String userId) {
+    public UserEntity patchUserAccept(String userId) {
         if (StringUtils.isEmpty(userId)) {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ID_PARAM_NOT_FOUND);
         }
         UserEntity userEntity = getUserById(userId);
-        userEntity.setEnabled(!userEntity.isEnabled());
+        Set<RoleEntity> roleEntitySet = new HashSet<>(userEntity.getRoleEntities());
+        roleEntitySet.remove(roleService.getRoleByName(ApplicationConfig.DEFAULT_USER_ROLE_NAME));
+        roleEntitySet.add(roleService.getRoleByName(ApplicationConfig.DEFAULT_ACCEPT_ROLE_NAME));
+        userEntity.setRoleEntities(new ArrayList<>(roleEntitySet));
         return userRepository.save(userEntity);
+    }
+
+    public UserEntity patchUserDenied(String userId, String message) {
+        if (StringUtils.isEmpty(userId)) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ID_PARAM_NOT_FOUND);
+        }
+        UserEntity userEntity = getUserById(userId);
+        Set<RoleEntity> roleEntitySet = new HashSet<>(userEntity.getRoleEntities());
+        roleEntitySet.remove(roleService.getRoleByName(ApplicationConfig.DEFAULT_USER_ROLE_NAME));
+        roleEntitySet.add(roleService.getRoleByName(ApplicationConfig.DEFAULT_DENIED_ROLE_NAME));
+        userEntity.setRoleEntities(new ArrayList<>(roleEntitySet));
+        userEntity.setMessage(message);
+        return userRepository.save(userEntity);
+    }
+
+    public List<UserEntity> getUserByRoleName(String rolename) {
+        List<UserEntity> userEntityList = userRepository.findAll();
+        List<UserEntity> resultUserEntityList = new ArrayList<>();
+        for (UserEntity userEntity : userEntityList) {
+            if (userEntity.getRoleEntities().contains(roleService.getRoleByName(rolename))) {
+                resultUserEntityList.add(userEntity);
+            }
+        }
+        return resultUserEntityList;
     }
 
     public CrewEntity saveCrew(String userId, CrewEntity crewArgs) {

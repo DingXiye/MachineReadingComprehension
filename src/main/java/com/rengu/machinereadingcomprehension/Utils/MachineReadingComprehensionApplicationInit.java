@@ -25,16 +25,32 @@ public class MachineReadingComprehensionApplicationInit implements ApplicationRu
 
     @Override
     public void run(ApplicationArguments args) {
+        // 管理员角色
         if (!roleService.hasRoleByName(ApplicationConfig.DEFAULT_ADMIN_ROLE_NAME)) {
             RoleEntity roleArgs = new RoleEntity();
             roleArgs.setName(ApplicationConfig.DEFAULT_ADMIN_ROLE_NAME);
             roleArgs.setDescription(ApplicationConfig.DEFAULT_ADMIN_ROLE_NAME);
             roleService.saveRole(roleArgs);
         }
+        // 用户角色
         if (!roleService.hasRoleByName(ApplicationConfig.DEFAULT_USER_ROLE_NAME)) {
             RoleEntity roleArgs = new RoleEntity();
             roleArgs.setName(ApplicationConfig.DEFAULT_USER_ROLE_NAME);
             roleArgs.setDescription(ApplicationConfig.DEFAULT_USER_ROLE_NAME);
+            roleService.saveRole(roleArgs);
+        }
+        // 审核通过角色
+        if (!roleService.hasRoleByName(ApplicationConfig.DEFAULT_ACCEPT_ROLE_NAME)) {
+            RoleEntity roleArgs = new RoleEntity();
+            roleArgs.setName(ApplicationConfig.DEFAULT_ACCEPT_ROLE_NAME);
+            roleArgs.setDescription(ApplicationConfig.DEFAULT_ACCEPT_ROLE_NAME);
+            roleService.saveRole(roleArgs);
+        }
+        // 审核未通过角色
+        if (!roleService.hasRoleByName(ApplicationConfig.DEFAULT_DENIED_ROLE_NAME)) {
+            RoleEntity roleArgs = new RoleEntity();
+            roleArgs.setName(ApplicationConfig.DEFAULT_DENIED_ROLE_NAME);
+            roleArgs.setDescription(ApplicationConfig.DEFAULT_DENIED_ROLE_NAME);
             roleService.saveRole(roleArgs);
         }
         if (!userService.hasUserByUsername(ApplicationConfig.DEFAULT_USER_USERNAME)) {
