@@ -213,22 +213,42 @@ public class UserService implements UserDetailsService {
             FileUtils.copyToFile(badge.getInputStream(), new File(badgePath));
             userArgs.setBadgePath(badgePath);
         }
+        if (!StringUtils.isEmpty(userArgs.getUsername())) {
+            if (hasUserByUsername(userArgs.getUsername())) {
+                throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_USERNAME_EXISTS);
+            }
+            userEntity.setUsername(userArgs.getUsername());
+        }
+        if (!StringUtils.isEmpty(userArgs.getPassword())) {
+            userEntity.setPassword(new BCryptPasswordEncoder().encode(userArgs.getPassword()));
+        }
         if (!StringUtils.isEmpty(userArgs.getEmail())) {
             userEntity.setEmail(userArgs.getEmail());
         }
         if (!StringUtils.isEmpty(userArgs.getTelephoneNumber())) {
+            if (hasUserByTelephoneNumber(userArgs.getTelephoneNumber())) {
+                throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_TELEPHONENUMBER_EXISTS);
+            }
             userEntity.setTelephoneNumber(userArgs.getTelephoneNumber());
         }
         if (!StringUtils.isEmpty(userArgs.getName())) {
             userEntity.setName(userArgs.getName());
         }
+        userEntity.setAge(userArgs.getAge());
+        userEntity.setSex(userArgs.getSex());
         if (!StringUtils.isEmpty(userArgs.getTeamName())) {
+            if (hasUserByTeamName(userArgs.getTeamName())) {
+                throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_TEAM_NAME_EXISTS);
+            }
             userEntity.setTeamName(userArgs.getTeamName());
         }
         if (!StringUtils.isEmpty(userArgs.getOrganization())) {
             userEntity.setOrganization(userArgs.getOrganization());
         }
-        return saveUser(userArgs, roleService.getRoleByName(ApplicationConfig.DEFAULT_USER_ROLE_NAME));
+        List<RoleEntity> roleList = new ArrayList<>();
+        roleList.add(roleService.getRoleByName(ApplicationConfig.DEFAULT_USER_ROLE_NAME));
+        userEntity.setRoleEntities(roleList);
+        return userRepository.save(userEntity);
     }
 
     public UserEntity getUserById(String userId) {
