@@ -21,6 +21,13 @@ public class CrewService {
         this.crewRepository = crewRepository;
     }
 
+    public boolean hasCrewByTelephoneNumber(String telephoneNumber) {
+        if (StringUtils.isEmpty(telephoneNumber)) {
+            return false;
+        }
+        return crewRepository.findByTelephoneNumber(telephoneNumber).isPresent();
+    }
+
     public CrewEntity saveCrew(UserEntity userEntity, CrewEntity crewArgs) {
         if (crewArgs == null) {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.CREW_PARAM_NOT_FOUND);
@@ -33,6 +40,9 @@ public class CrewService {
         }
         if (StringUtils.isEmpty(crewArgs.getTelephoneNumber())) {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.CREW_TELEPHONENUMBER_PARAM_NOT_FOUND);
+        }
+        if (hasCrewByTelephoneNumber(crewArgs.getTelephoneNumber())) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.CREW_TELEPHONENUMBER_EXISTS);
         }
         if (StringUtils.isEmpty(crewArgs.getOrganization())) {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.CREW_ORGANIZATION_PARAM_NOT_FOUND);

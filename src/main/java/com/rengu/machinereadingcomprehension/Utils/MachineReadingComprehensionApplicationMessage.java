@@ -16,9 +16,9 @@ public class MachineReadingComprehensionApplicationMessage {
     public static final String USER_AGE_PARAM_NOT_FOUND = "用户年龄参数不存在";
     public static final String USER_TEAMNAME_PARAM_NOT_FOUND = "用户团队名称参数不存在";
     public static final String USER_ORGANIZATION_PARAM_NOT_FOUND = "用户组织参数不存在";
-    public static final String USER_JOB_PARAM_NOT_FOUND = "用户职位参数不存在";
     public static final String USER_USERNAME_EXISTS = "用户中已存在该用户名";
     public static final String USER_TEAM_NAME_EXISTS = "用户中已存在该团队名称";
+    public static final String USER_TELEPHONENUMBER_EXISTS = "用户中已存在该手机号码";
 
     // 角色相关提示信息
     public static final String ROLE_PARAM_NOT_FOUND = "角色参数不存在";
@@ -32,4 +32,5 @@ public class MachineReadingComprehensionApplicationMessage {
     public static final String CREW_TELEPHONENUMBER_PARAM_NOT_FOUND = "团队成员电话号码参数不存在";
     public static final String CREW_AGE_PARAM_NOT_FOUND = "团队成员年龄参数不存在";
     public static final String CREW_ORGANIZATION_PARAM_NOT_FOUND = "团队成员组织参数不存在";
+    public static final String CREW_TELEPHONENUMBER_EXISTS = "团队成员电话号码已存在";
 }

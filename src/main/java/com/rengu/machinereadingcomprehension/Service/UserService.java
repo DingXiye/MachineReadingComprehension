@@ -51,6 +51,13 @@ public class UserService implements UserDetailsService {
         return userRepository.findByUsername(username).isPresent();
     }
 
+    public boolean hasUserByTelephoneNumber(String telephoneNumber) {
+        if (StringUtils.isEmpty(telephoneNumber)) {
+            return false;
+        }
+        return userRepository.findByTelephoneNumber(telephoneNumber).isPresent();
+    }
+
     public boolean hasUserByTeamName(String teamName) {
         if (StringUtils.isEmpty(teamName)) {
             return false;
@@ -76,6 +83,9 @@ public class UserService implements UserDetailsService {
         }
         if (hasUserByTeamName(userArgs.getTeamName())) {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_TEAM_NAME_EXISTS);
+        }
+        if (hasUserByTelephoneNumber(userArgs.getTelephoneNumber())) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_TELEPHONENUMBER_EXISTS);
         }
         UserEntity userEntity = new UserEntity();
         BeanUtils.copyProperties(userArgs, userEntity, "id", "createTime", "password", "accountNonExpired", "accountNonLocked", "credentialsNonExpired", "roleEntities", "crewEntities");
