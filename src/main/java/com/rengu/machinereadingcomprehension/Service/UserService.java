@@ -272,7 +272,7 @@ public class UserService implements UserDetailsService {
         List<UserEntity> userEntityList = userRepository.findAll();
         List<UserEntity> resultUserEntityList = new ArrayList<>();
         for (UserEntity userEntity : userEntityList) {
-            if (userEntity.getRoleEntities().contains(roleService.getRoleByName(rolename))) {
+            if (userEntity.getRoleEntities().contains(roleService.getRoleByName(rolename)) && !userEntity.getRoleEntities().contains(roleService.getRoleByName(ApplicationConfig.DEFAULT_ADMIN_ROLE_NAME))) {
                 resultUserEntityList.add(userEntity);
             }
         }
