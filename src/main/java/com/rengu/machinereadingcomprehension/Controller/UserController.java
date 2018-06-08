@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 @RestController
@@ -113,6 +114,12 @@ public class UserController {
         // 文件流输出
         IOUtils.copy(new FileInputStream(userEntity.getBadgePath()), httpServletResponse.getOutputStream());
         httpServletResponse.flushBuffer();
+    }
+
+    // 提交作品
+    @PostMapping(value = "/{userId}/commit")
+    public ResultEntity commit(@PathVariable(value = "userId") String userId, @RequestParam(value = "work") MultipartFile multipartFile) throws FileNotFoundException {
+        return ResultService.resultBuilder(userService.commit(userId, multipartFile));
     }
 
     // 保存团队成员

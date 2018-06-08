@@ -6,6 +6,7 @@ import com.rengu.machinereadingcomprehension.Entity.UserEntity;
 import com.rengu.machinereadingcomprehension.Repository.UserRepository;
 import com.rengu.machinereadingcomprehension.Utils.ApplicationConfig;
 import com.rengu.machinereadingcomprehension.Utils.MachineReadingComprehensionApplicationMessage;
+import com.rengu.machinereadingcomprehension.Utils.PythonUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.BeanUtils;
@@ -19,6 +20,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 
@@ -245,6 +247,7 @@ public class UserService implements UserDetailsService {
         List<RoleEntity> roleList = new ArrayList<>();
         roleList.add(roleService.getRoleByName(ApplicationConfig.DEFAULT_USER_ROLE_NAME));
         userEntity.setRoleEntities(roleList);
+        userEntity.setMessage(null);
         return userRepository.save(userEntity);
     }
 
@@ -293,6 +296,15 @@ public class UserService implements UserDetailsService {
             }
         }
         return resultUserEntityList;
+    }
+
+    public UserEntity commit(String userId, MultipartFile multipartFile) throws FileNotFoundException {
+        if (StringUtils.isEmpty(userId)) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ID_PARAM_NOT_FOUND);
+        }
+        UserEntity userEntity = getUserById(userId);
+        PythonUtils.excuScript();
+        return userRepository.save(userEntity);
     }
 
     public CrewEntity saveCrew(String userId, CrewEntity crewArgs) {

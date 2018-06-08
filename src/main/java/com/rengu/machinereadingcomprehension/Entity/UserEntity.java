@@ -34,6 +34,8 @@ public class UserEntity implements UserDetails, Serializable {
     private boolean credentialsNonExpired = true;
     private boolean enabled = true;
     private String badgePath;
+    private double BLEU_4_Score;
+    private double ROUGE_Score;
     @ManyToMany(fetch = FetchType.EAGER)
     private List<RoleEntity> roleEntities;
 
@@ -199,6 +201,22 @@ public class UserEntity implements UserDetails, Serializable {
 
     public void setBadgePath(String badgePath) {
         this.badgePath = badgePath;
+    }
+
+    public double getBLEU_4_Score() {
+        return BLEU_4_Score;
+    }
+
+    public void setBLEU_4_Score(double BLEU_4_Score) {
+        this.BLEU_4_Score = BLEU_4_Score;
+    }
+
+    public double getROUGE_Score() {
+        return ROUGE_Score;
+    }
+
+    public void setROUGE_Score(double ROUGE_Score) {
+        this.ROUGE_Score = ROUGE_Score;
     }
 
     public List<RoleEntity> getRoleEntities() {
