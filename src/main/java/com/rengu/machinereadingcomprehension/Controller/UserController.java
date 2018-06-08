@@ -53,15 +53,15 @@ public class UserController {
     }
 
     //修改用户
-    @PatchMapping(value = "/{userId}")
+    @PostMapping(value = "/{userId}")
     public ResultEntity patchUser(@PathVariable(value = "userId") String userId, UserEntity userArgs) {
         return ResultService.resultBuilder(userService.patchUser(userId, userArgs));
     }
 
     // 修改用户密码
-    @PatchMapping(value = "/{userId}/password")
-    public ResultEntity patchUserPassword(@PathVariable(value = "userId") String userId, UserEntity userArgs) {
-        return ResultService.resultBuilder(userService.patchUserPassword(userId, userArgs));
+    @PostMapping(value = "/{userId}/password")
+    public ResultEntity patchUserPassword(@PathVariable(value = "userId") String userId, @RequestParam(value = "password") String password) {
+        return ResultService.resultBuilder(userService.patchUserPassword(userId, password));
     }
 
     // 重新提交

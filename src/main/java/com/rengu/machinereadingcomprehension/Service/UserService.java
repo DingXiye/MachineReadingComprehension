@@ -188,18 +188,15 @@ public class UserService implements UserDetailsService {
         return userRepository.save(userEntity);
     }
 
-    public UserEntity patchUserPassword(String userId, UserEntity userArgs) {
+    public UserEntity patchUserPassword(String userId, String password) {
         if (StringUtils.isEmpty(userId)) {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ID_PARAM_NOT_FOUND);
         }
         UserEntity userEntity = getUserById(userId);
-        if (userArgs == null) {
-            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_PARAM_NOT_FOUND);
-        }
-        if (StringUtils.isEmpty(userArgs.getPassword())) {
+        if (StringUtils.isEmpty(password)) {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_PASSWORD_PARAM_NOT_FOUND);
         }
-        userEntity.setPassword(new BCryptPasswordEncoder().encode(userArgs.getPassword()));
+        userEntity.setPassword(new BCryptPasswordEncoder().encode(password));
         return userRepository.save(userEntity);
     }
 
@@ -211,9 +208,9 @@ public class UserService implements UserDetailsService {
         if (badge != null || !badge.isEmpty()) {
             String badgePath = (FileUtils.getUserDirectoryPath() + "/user-badge/" + UUID.randomUUID() + "." + FilenameUtils.getExtension(badge.getOriginalFilename())).replace("\\", "/");
             FileUtils.copyToFile(badge.getInputStream(), new File(badgePath));
-            userArgs.setBadgePath(badgePath);
+            userEntity.setBadgePath(badgePath);
         }
-        if (!StringUtils.isEmpty(userArgs.getUsername())) {
+        if (!StringUtils.isEmpty(userArgs.getUsername()) && !userEntity.getUsername().equals(userArgs.getUsername())) {
             if (hasUserByUsername(userArgs.getUsername())) {
                 throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_USERNAME_EXISTS);
             }
@@ -225,7 +222,7 @@ public class UserService implements UserDetailsService {
         if (!StringUtils.isEmpty(userArgs.getEmail())) {
             userEntity.setEmail(userArgs.getEmail());
         }
-        if (!StringUtils.isEmpty(userArgs.getTelephoneNumber())) {
+        if (!StringUtils.isEmpty(userArgs.getTelephoneNumber()) && !userEntity.getTelephoneNumber().equals(userArgs.getTelephoneNumber())) {
             if (hasUserByTelephoneNumber(userArgs.getTelephoneNumber())) {
                 throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_TELEPHONENUMBER_EXISTS);
             }
@@ -236,7 +233,7 @@ public class UserService implements UserDetailsService {
         }
         userEntity.setAge(userArgs.getAge());
         userEntity.setSex(userArgs.getSex());
-        if (!StringUtils.isEmpty(userArgs.getTeamName())) {
+        if (!StringUtils.isEmpty(userArgs.getTeamName()) && !userEntity.getTeamName().equals(userArgs.getTeamName())) {
             if (hasUserByTeamName(userArgs.getTeamName())) {
                 throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_TEAM_NAME_EXISTS);
             }
