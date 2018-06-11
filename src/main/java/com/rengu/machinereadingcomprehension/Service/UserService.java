@@ -344,6 +344,14 @@ public class UserService implements UserDetailsService {
         return crewService.patchCrew(userEntity, crewId, crewArgs);
     }
 
+    public CrewEntity getCrewById(String userId, String crewId) {
+        if (StringUtils.isEmpty(userId)) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ID_PARAM_NOT_FOUND);
+        }
+        UserEntity userEntity = getUserById(userId);
+        return crewService.getCrewById(crewId);
+    }
+
     public List<CrewEntity> getCrewByUserId(String userId) {
         if (StringUtils.isEmpty(userId)) {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ID_PARAM_NOT_FOUND);
