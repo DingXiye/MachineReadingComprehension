@@ -115,6 +115,11 @@ public class UserController {
         httpServletResponse.flushBuffer();
     }
 
+    @PutMapping(value = "/{userId}/commitfile")
+    public ResultEntity commitFile(@PathVariable(value = "userId") String userId, @RequestParam(value = "file") MultipartFile multipartFile) {
+        return ResultService.resultBuilder(userService.commitFile(userId, multipartFile));
+    }
+
     // 保存团队成员
     @PostMapping(value = "/{userId}/crew")
     public ResultEntity saveCrew(@PathVariable(value = "userId") String userId, CrewEntity crewArgs) {

@@ -8,6 +8,7 @@ import com.rengu.machinereadingcomprehension.Utils.ApplicationConfig;
 import com.rengu.machinereadingcomprehension.Utils.MachineReadingComprehensionApplicationMessage;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -296,6 +297,29 @@ public class UserService implements UserDetailsService {
             }
         }
         return resultUserEntityList;
+    }
+
+    public UserEntity commitFile(String userId, MultipartFile multipartFile) {
+        if (StringUtils.isEmpty(userId)) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ID_PARAM_NOT_FOUND);
+        }
+        UserEntity userEntity = getUserById(userId);
+        if (userEntity.getCommitDate() == null) {
+            userEntity.setCommitDate(new Date());
+            userEntity.setCommitTimes(ApplicationConfig.MAX_COMMIT_TIMES);
+        } else {
+            if (DateUtils.isSameDay(userEntity.getCommitDate(), new Date())) {
+                if (userEntity.getCommitTimes() == 0) {
+                    throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_MAX_COMMIT_TIMES);
+                }
+                userEntity.setCommitTimes(userEntity.getCommitTimes() - 1);
+                userEntity.setCommitDate(new Date());
+            } else {
+                userEntity.setCommitDate(new Date());
+                userEntity.setCommitTimes(ApplicationConfig.MAX_COMMIT_TIMES);
+            }
+        }
+        return userRepository.save(userEntity);
     }
 
     public CrewEntity saveCrew(String userId, CrewEntity crewArgs) {

@@ -36,6 +36,8 @@ public class UserEntity implements UserDetails, Serializable {
     private String badgePath;
     private double BLEU_4_Score;
     private double ROUGE_Score;
+    private Date commitDate;
+    private int commitTimes;
     @ManyToMany(fetch = FetchType.EAGER)
     private List<RoleEntity> roleEntities;
 
@@ -217,6 +219,22 @@ public class UserEntity implements UserDetails, Serializable {
 
     public void setROUGE_Score(double ROUGE_Score) {
         this.ROUGE_Score = ROUGE_Score;
+    }
+
+    public Date getCommitDate() {
+        return commitDate;
+    }
+
+    public void setCommitDate(Date commitDate) {
+        this.commitDate = commitDate;
+    }
+
+    public int getCommitTimes() {
+        return commitTimes;
+    }
+
+    public void setCommitTimes(int commitTimes) {
+        this.commitTimes = commitTimes;
     }
 
     public List<RoleEntity> getRoleEntities() {
