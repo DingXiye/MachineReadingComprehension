@@ -312,6 +312,14 @@ public class UserService implements UserDetailsService {
         return crewService.deleteCrew(crewId);
     }
 
+    public CrewEntity patchCrew(String userId, String crewId, CrewEntity crewArgs) {
+        if (StringUtils.isEmpty(userId)) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ID_PARAM_NOT_FOUND);
+        }
+        UserEntity userEntity = getUserById(userId);
+        return crewService.patchCrew(userEntity, crewId, crewArgs);
+    }
+
     public List<CrewEntity> getCrewByUserId(String userId) {
         if (StringUtils.isEmpty(userId)) {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ID_PARAM_NOT_FOUND);

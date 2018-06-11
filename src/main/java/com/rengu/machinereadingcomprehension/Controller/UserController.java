@@ -127,6 +127,11 @@ public class UserController {
         return ResultService.resultBuilder(userService.deleteCrew(userId, crewId));
     }
 
+    @PatchMapping(value = "/{userId}/crew/{crewId}")
+    public ResultEntity patchCrew(@PathVariable(value = "userId") String userId, @PathVariable(value = "crewId") String crewId, CrewEntity crewArgs) {
+        return ResultService.resultBuilder(userService.patchCrew(userId, crewId, crewArgs));
+    }
+
     @GetMapping(value = "/{userId}/crew")
     public ResultEntity getCrewByUserId(@PathVariable(value = "userId") String userId) {
         return ResultService.resultBuilder(userService.getCrewByUserId(userId));

@@ -62,6 +62,32 @@ public class CrewService {
         return crewEntity;
     }
 
+    public CrewEntity patchCrew(UserEntity userEntity, String crewId, CrewEntity crewArgs) {
+        CrewEntity crewEntity = getCrewById(crewId);
+        if (!StringUtils.isEmpty(crewArgs.getName())) {
+            if (!crewEntity.getName().equals(crewArgs.getName())) {
+                crewEntity.setName(crewArgs.getName());
+            }
+        }
+        if (crewEntity.getAge() != crewArgs.getAge()) {
+            crewEntity.setAge(crewArgs.getAge());
+        }
+        if (crewEntity.getSex() != crewArgs.getSex()) {
+            crewEntity.setSex(crewArgs.getSex());
+        }
+        if (!StringUtils.isEmpty(crewArgs.getTelephoneNumber())) {
+            if (!crewEntity.getTelephoneNumber().equals(crewArgs.getTelephoneNumber())) {
+                crewEntity.setTelephoneNumber(crewArgs.getTelephoneNumber());
+            }
+        }
+        if (!StringUtils.isEmpty(crewArgs.getOrganization())) {
+            if (!crewEntity.getOrganization().equals(crewArgs.getOrganization())) {
+                crewEntity.setOrganization(crewArgs.getOrganization());
+            }
+        }
+        return crewRepository.save(crewEntity);
+    }
+
     public CrewEntity getCrewById(String crewId) {
         if (StringUtils.isEmpty(crewId)) {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.CREW_ID_PARAM_NOT_FOUND);
