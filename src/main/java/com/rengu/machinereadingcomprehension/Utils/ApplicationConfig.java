@@ -12,5 +12,5 @@ public class ApplicationConfig {
 
     // 默认用户
     public static String DEFAULT_USER_USERNAME = "admin";
-    public static String DEFAULT_USER_PASSWORD = "admin";
+    public static String DEFAULT_USER_PASSWORD = "tszx11hcM@4";
 }
