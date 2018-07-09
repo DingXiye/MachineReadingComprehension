@@ -146,4 +146,9 @@ public class UserController {
     public ResultEntity getCrewByUserId(@PathVariable(value = "userId") String userId) {
         return ResultService.resultBuilder(userService.getCrewByUserId(userId));
     }
+
+    @GetMapping(value = "/{userId}/scorelogs")
+    public ResultEntity getScoreLogByUser(@PathVariable(value = "userId") String userId) {
+        return ResultService.resultBuilder(userService.getScoreLogByUser(userId));
+    }
 }

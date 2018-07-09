@@ -2,6 +2,7 @@ package com.rengu.machinereadingcomprehension.Service;
 
 import com.rengu.machinereadingcomprehension.Entity.CrewEntity;
 import com.rengu.machinereadingcomprehension.Entity.RoleEntity;
+import com.rengu.machinereadingcomprehension.Entity.ScoreLogEntity;
 import com.rengu.machinereadingcomprehension.Entity.UserEntity;
 import com.rengu.machinereadingcomprehension.Repository.UserRepository;
 import com.rengu.machinereadingcomprehension.Utils.ApplicationConfig;
@@ -29,12 +30,14 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final RoleService roleService;
     private final CrewService crewService;
+    private final ScoreLogService scoreLogService;
 
     @Autowired
-    public UserService(UserRepository userRepository, RoleService roleService, CrewService crewService) {
+    public UserService(UserRepository userRepository, RoleService roleService, CrewService crewService, ScoreLogService scoreLogService) {
         this.userRepository = userRepository;
         this.roleService = roleService;
         this.crewService = crewService;
+        this.scoreLogService = scoreLogService;
     }
 
     @Override
@@ -319,6 +322,13 @@ public class UserService implements UserDetailsService {
                 userEntity.setCommitTimes(ApplicationConfig.MAX_COMMIT_TIMES);
             }
         }
+        Map<String, Double> resultMap = scoreLogService.saveScoreLog(multipartFile, userEntity);
+        if (resultMap.get("BLEU_4") > userEntity.getBLEU_4_Score()) {
+            userEntity.setBLEU_4_Score(resultMap.get("BLEU_4"));
+        }
+        if (resultMap.get("ROUGE") > userEntity.getROUGE_Score()) {
+            userEntity.setROUGE_Score(resultMap.get("ROUGE"));
+        }
         return userRepository.save(userEntity);
     }
 
@@ -357,5 +367,13 @@ public class UserService implements UserDetailsService {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ID_PARAM_NOT_FOUND);
         }
         return crewService.getCrewByUserId(userId);
+    }
+
+    public List<ScoreLogEntity> getScoreLogByUser(String userId) {
+        if (StringUtils.isEmpty(userId)) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ID_PARAM_NOT_FOUND);
+        }
+        UserEntity userEntity = getUserById(userId);
+        return scoreLogService.getScoreLogByUser(userEntity);
     }
 }
