@@ -39,6 +39,7 @@ public class ScoreLogService {
         Map<String, Double> resultMap = new HashMap<>();
         resultMap.put("BLEU_4", scoreLogEntity.getBLEU_4_Score());
         resultMap.put("ROUGE", scoreLogEntity.getROUGE_Score());
+        scoreLogRepository.save(scoreLogEntity);
         return resultMap;
     }
 

@@ -309,7 +309,7 @@ public class UserService implements UserDetailsService {
         UserEntity userEntity = getUserById(userId);
         if (userEntity.getCommitDate() == null) {
             userEntity.setCommitDate(new Date());
-            userEntity.setCommitTimes(ApplicationConfig.MAX_COMMIT_TIMES);
+            userEntity.setCommitTimes(ApplicationConfig.MAX_COMMIT_TIMES - 1);
         } else {
             if (DateUtils.isSameDay(userEntity.getCommitDate(), new Date())) {
                 if (userEntity.getCommitTimes() == 0) {
@@ -319,7 +319,7 @@ public class UserService implements UserDetailsService {
                 userEntity.setCommitDate(new Date());
             } else {
                 userEntity.setCommitDate(new Date());
-                userEntity.setCommitTimes(ApplicationConfig.MAX_COMMIT_TIMES);
+                userEntity.setCommitTimes(ApplicationConfig.MAX_COMMIT_TIMES - 1);
             }
         }
         Map<String, Double> resultMap = scoreLogService.saveScoreLog(multipartFile, userEntity);
