@@ -302,7 +302,7 @@ public class UserService implements UserDetailsService {
         return resultUserEntityList;
     }
 
-    public UserEntity commitFile(String userId, MultipartFile multipartFile) {
+    public UserEntity commitFile(String userId, MultipartFile ref, MultipartFile pred) throws IOException {
         if (StringUtils.isEmpty(userId)) {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ID_PARAM_NOT_FOUND);
         }
@@ -322,7 +322,7 @@ public class UserService implements UserDetailsService {
                 userEntity.setCommitTimes(ApplicationConfig.MAX_COMMIT_TIMES - 1);
             }
         }
-        Map<String, Double> resultMap = scoreLogService.saveScoreLog(multipartFile, userEntity);
+        Map<String, Double> resultMap = scoreLogService.saveScoreLog(ref, pred, userEntity);
         if (resultMap.get("BLEU_4") > userEntity.getBLEU_4_Score()) {
             userEntity.setBLEU_4_Score(resultMap.get("BLEU_4"));
         }

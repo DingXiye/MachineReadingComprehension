@@ -116,8 +116,8 @@ public class UserController {
     }
 
     @PutMapping(value = "/{userId}/commitfile")
-    public ResultEntity commitFile(@PathVariable(value = "userId") String userId, @RequestParam(value = "file") MultipartFile multipartFile) {
-        return ResultService.resultBuilder(userService.commitFile(userId, multipartFile));
+    public ResultEntity commitFile(@PathVariable(value = "userId") String userId, @RequestParam(value = "ref") MultipartFile ref, @RequestParam(value = "pred") MultipartFile pred) throws IOException {
+        return ResultService.resultBuilder(userService.commitFile(userId, ref, pred));
     }
 
     // 保存团队成员
