@@ -64,6 +64,16 @@ public class UserController {
         return ResultService.resultBuilder(userService.patchUserPassword(userId, password));
     }
 
+    @PostMapping(value = "/forgetpasswordcheck")
+    public ResultEntity forgetpasswordcheck(UserEntity userEntity) {
+        return ResultService.resultBuilder(userService.forgetpasswordcheck(userEntity));
+    }
+
+    @PostMapping(value = "/forgetpassword")
+    public ResultEntity forgetPassword(UserEntity userEntity) {
+        return ResultService.resultBuilder(userService.forgetPassword(userEntity));
+    }
+
     // 重新提交
     @PostMapping(value = "/{userId}/recommit")
     public ResultEntity recommit(@PathVariable(value = "userId") String userId, @RequestParam(value = "badge", required = false) MultipartFile badge, UserEntity userArgs) throws IOException {

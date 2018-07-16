@@ -204,6 +204,23 @@ public class UserService implements UserDetailsService {
         return userRepository.save(userEntity);
     }
 
+    public UserEntity forgetpasswordcheck(UserEntity userArgs) {
+        if (StringUtils.isEmpty(userArgs.getUsername()) || !hasUserByUsername(userArgs.getUsername())) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_NAME_PARAM_NOT_FOUND);
+        }
+        UserEntity userEntity = getUserByUsername(userArgs.getUsername());
+        if (!userEntity.getName().equals(userArgs.getName()) || !userEntity.getTelephoneNumber().equals(userArgs.getTelephoneNumber()) || !userEntity.getEmail().equals(userArgs.getEmail())) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_INFORMATION_ERROR);
+        }
+        return userEntity;
+    }
+
+    public UserEntity forgetPassword(UserEntity userArgs) {
+        UserEntity userEntity = forgetpasswordcheck(userArgs);
+        userEntity.setPassword(new BCryptPasswordEncoder().encode(userArgs.getPassword()));
+        return userRepository.save(userEntity);
+    }
+
     public UserEntity recommit(String userId, MultipartFile badge, UserEntity userArgs) throws IOException {
         if (StringUtils.isEmpty(userId)) {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ID_PARAM_NOT_FOUND);
@@ -330,6 +347,13 @@ public class UserService implements UserDetailsService {
             userEntity.setROUGE_Score(resultMap.get("ROUGE"));
         }
         return userRepository.save(userEntity);
+    }
+
+    public UserEntity getUserByUsername(String username) {
+        if (StringUtils.isEmpty(username)) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_NAME_PARAM_NOT_FOUND);
+        }
+        return userRepository.findByUsername(username).get();
     }
 
     public CrewEntity saveCrew(String userId, CrewEntity crewArgs) {

@@ -20,6 +20,7 @@ public class MachineReadingComprehensionApplicationMessage {
     public static final String USER_TEAM_NAME_EXISTS = "用户中已存在该团队名称";
     public static final String USER_TELEPHONENUMBER_EXISTS = "用户中已存在该手机号码";
     public static final String USER_MAX_COMMIT_TIMES = "达到上传最大次数限制";
+    public static final String USER_INFORMATION_ERROR = "用户信息不吻合";
 
     // 角色相关提示信息
     public static final String ROLE_PARAM_NOT_FOUND = "角色参数不存在";
