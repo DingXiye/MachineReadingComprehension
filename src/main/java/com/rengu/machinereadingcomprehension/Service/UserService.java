@@ -206,7 +206,7 @@ public class UserService implements UserDetailsService {
 
     public UserEntity forgetpasswordcheck(UserEntity userArgs) {
         if (StringUtils.isEmpty(userArgs.getUsername()) || !hasUserByUsername(userArgs.getUsername())) {
-            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_NAME_PARAM_NOT_FOUND);
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_USERNAME_PARAM_NOT_FOUND + "或不正确");
         }
         UserEntity userEntity = getUserByUsername(userArgs.getUsername());
         if (!userEntity.getName().equals(userArgs.getName()) || !userEntity.getTelephoneNumber().equals(userArgs.getTelephoneNumber()) || !userEntity.getEmail().equals(userArgs.getEmail())) {

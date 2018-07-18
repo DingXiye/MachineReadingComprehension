@@ -54,6 +54,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.httpBasic();
         // 请求全部需要鉴权认证
         http.authorizeRequests().antMatchers(HttpMethod.POST, "/users").permitAll();
+        http.authorizeRequests().antMatchers(HttpMethod.POST, "/users/forgetpasswordcheck").permitAll();
+        http.authorizeRequests().antMatchers(HttpMethod.POST, "/users/forgetpassword").permitAll();
         http.authorizeRequests().anyRequest().authenticated();
     }
 }
