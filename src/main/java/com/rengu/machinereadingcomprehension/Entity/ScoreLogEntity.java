@@ -25,6 +25,7 @@ public class ScoreLogEntity implements Serializable {
     private Date createTime = new Date();
     private double BLEU_4_Score;
     private double ROUGE_Score;
+    private int type;
     @ManyToOne
     private UserEntity userEntity;
 
@@ -71,6 +72,14 @@ public class ScoreLogEntity implements Serializable {
 
     public void setROUGE_Score(double ROUGE_Score) {
         this.ROUGE_Score = ROUGE_Score;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 
     public UserEntity getUserEntity() {

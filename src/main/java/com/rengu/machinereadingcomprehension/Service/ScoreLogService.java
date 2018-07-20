@@ -9,16 +9,15 @@ import okhttp3.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @program: MachineReadingComprehension
@@ -31,6 +30,7 @@ import java.util.UUID;
 public class ScoreLogService {
 
     private final ScoreLogRepository scoreLogRepository;
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyymmddHHmmss");
 
     @Autowired
     public ScoreLogService(ScoreLogRepository scoreLogRepository) {
@@ -77,7 +77,25 @@ public class ScoreLogService {
         return resultMap;
     }
 
+    // 保存成绩历史
+    public ScoreLogEntity saveScoreLog(UserEntity userEntity, MultipartFile multipartFile, int type) throws IOException {
+        // 接收文件
+        File resultFile = new File(FileUtils.getUserDirectoryPath() + "/User_Result/" + userEntity.getTeamName() + "_" + simpleDateFormat.format(new Date()) + "." + FilenameUtils.getExtension(multipartFile.getOriginalFilename()));
+        FileUtils.copyInputStreamToFile(multipartFile.getInputStream(), resultFile);
+        Random random = new Random();
+        ScoreLogEntity scoreLogEntity = new ScoreLogEntity();
+        scoreLogEntity.setUserEntity(userEntity);
+        scoreLogEntity.setType(type);
+        scoreLogEntity.setBLEU_4_Score(random.nextDouble() * 100);
+        scoreLogEntity.setROUGE_Score(random.nextDouble() * 100);
+        return scoreLogRepository.save(scoreLogEntity);
+    }
+
+    public List<ScoreLogEntity> getScoreLogByUserAndType(UserEntity userEntity, int Type) {
+        return scoreLogRepository.findByUserEntityIdAndType(new Sort(Sort.Direction.DESC, "createTime"), userEntity.getId(), Type);
+    }
+
     public List<ScoreLogEntity> getScoreLogByUser(UserEntity userEntity) {
-        return scoreLogRepository.findByUserEntityId(userEntity.getId());
+        return scoreLogRepository.findByUserEntityId(new Sort(Sort.Direction.DESC, "createTime"), userEntity.getId());
     }
 }

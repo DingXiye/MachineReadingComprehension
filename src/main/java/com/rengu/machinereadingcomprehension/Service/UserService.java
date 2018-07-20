@@ -12,6 +12,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -319,32 +320,83 @@ public class UserService implements UserDetailsService {
         return resultUserEntityList;
     }
 
-    public UserEntity commitFile(String userId, MultipartFile ref, MultipartFile pred) throws IOException {
+    public UserEntity commitFile_T(String userId, MultipartFile ref) throws IOException {
         if (StringUtils.isEmpty(userId)) {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ID_PARAM_NOT_FOUND);
         }
         UserEntity userEntity = getUserById(userId);
-        if (userEntity.getCommitDate() == null) {
-            userEntity.setCommitDate(new Date());
-            userEntity.setCommitTimes(ApplicationConfig.MAX_COMMIT_TIMES - 1);
+        if (userEntity.getCommitDateT() == null) {
+            userEntity.setCommitTimesT(ApplicationConfig.MAX_COMMIT_TIMES_T - 1);
         } else {
-            if (DateUtils.isSameDay(userEntity.getCommitDate(), new Date())) {
-                if (userEntity.getCommitTimes() == 0) {
+            if (DateUtils.isSameDay(userEntity.getCommitDateT(), new Date())) {
+                if (userEntity.getCommitTimesT() == 0) {
                     throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_MAX_COMMIT_TIMES);
                 }
-                userEntity.setCommitTimes(userEntity.getCommitTimes() - 1);
-                userEntity.setCommitDate(new Date());
+                userEntity.setCommitTimesT(userEntity.getCommitTimesT() - 1);
             } else {
-                userEntity.setCommitDate(new Date());
-                userEntity.setCommitTimes(ApplicationConfig.MAX_COMMIT_TIMES - 1);
+                userEntity.setCommitTimesT(ApplicationConfig.MAX_COMMIT_TIMES_T - 1);
             }
         }
-        Map<String, Double> resultMap = scoreLogService.saveScoreLog(ref, pred, userEntity);
-        if (resultMap.get("BLEU_4") > userEntity.getBLEU_4_Score()) {
-            userEntity.setBLEU_4_Score(resultMap.get("BLEU_4"));
+        // 计算逻辑
+        ScoreLogEntity scoreLogEntity = scoreLogService.saveScoreLog(userEntity, ref, 0);
+        if (scoreLogEntity.getROUGE_Score() > userEntity.getRougelScoreT()) {
+            userEntity.setRougelScoreT(scoreLogEntity.getROUGE_Score());
+            userEntity.setBleu4ScoreT(scoreLogEntity.getBLEU_4_Score());
+            userEntity.setCommitDateT(new Date());
         }
-        if (resultMap.get("ROUGE") > userEntity.getROUGE_Score()) {
-            userEntity.setROUGE_Score(resultMap.get("ROUGE"));
+        return userRepository.save(userEntity);
+    }
+
+    public UserEntity commitFile_P(String userId, MultipartFile ref) throws IOException {
+        if (StringUtils.isEmpty(userId)) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ID_PARAM_NOT_FOUND);
+        }
+        UserEntity userEntity = getUserById(userId);
+        if (userEntity.getCommitDateP() == null) {
+            userEntity.setCommitTimesP(ApplicationConfig.MAX_COMMIT_TIMES_P - 1);
+        } else {
+            if (DateUtils.isSameDay(userEntity.getCommitDateP(), new Date())) {
+                if (userEntity.getCommitTimesP() == 0) {
+                    throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_MAX_COMMIT_TIMES);
+                }
+                userEntity.setCommitTimesP(userEntity.getCommitTimesP() - 1);
+            } else {
+                userEntity.setCommitTimesP(ApplicationConfig.MAX_COMMIT_TIMES_P - 1);
+            }
+        }
+        // 计算逻辑
+        ScoreLogEntity scoreLogEntity = scoreLogService.saveScoreLog(userEntity, ref, 1);
+        if (scoreLogEntity.getROUGE_Score() > userEntity.getRougelScoreP()) {
+            userEntity.setRougelScoreP(scoreLogEntity.getROUGE_Score());
+            userEntity.setBleu4ScoreP(scoreLogEntity.getBLEU_4_Score());
+            userEntity.setCommitDateP(new Date());
+        }
+        return userRepository.save(userEntity);
+    }
+
+    public UserEntity commitFile_F(String userId, MultipartFile ref) throws IOException {
+        if (StringUtils.isEmpty(userId)) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ID_PARAM_NOT_FOUND);
+        }
+        UserEntity userEntity = getUserById(userId);
+        if (userEntity.getCommitDateF() == null) {
+            userEntity.setCommitTimesF(ApplicationConfig.MAX_COMMIT_TIMES_F - 1);
+        } else {
+            if (DateUtils.isSameDay(userEntity.getCommitDateF(), new Date())) {
+                if (userEntity.getCommitTimesF() == 0) {
+                    throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_MAX_COMMIT_TIMES);
+                }
+                userEntity.setCommitTimesF(userEntity.getCommitTimesF() - 1);
+            } else {
+                userEntity.setCommitTimesF(ApplicationConfig.MAX_COMMIT_TIMES_F - 1);
+            }
+        }
+        // 计算逻辑
+        ScoreLogEntity scoreLogEntity = scoreLogService.saveScoreLog(userEntity, ref, 2);
+        if (scoreLogEntity.getROUGE_Score() > userEntity.getRougelScoreF()) {
+            userEntity.setRougelScoreF(scoreLogEntity.getROUGE_Score());
+            userEntity.setBleu4ScoreF(scoreLogEntity.getBLEU_4_Score());
+            userEntity.setCommitDateF(new Date());
         }
         return userRepository.save(userEntity);
     }
@@ -399,5 +451,26 @@ public class UserService implements UserDetailsService {
         }
         UserEntity userEntity = getUserById(userId);
         return scoreLogService.getScoreLogByUser(userEntity);
+    }
+
+    public List<ScoreLogEntity> getScoreLogByUserAndType(String userId, int type) {
+        if (StringUtils.isEmpty(userId)) {
+            throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ID_PARAM_NOT_FOUND);
+        }
+        UserEntity userEntity = getUserById(userId);
+        return scoreLogService.getScoreLogByUserAndType(userEntity, type);
+    }
+
+    public List<UserEntity> userRanking(int type) {
+        switch (type) {
+            case 0:
+                return userRepository.findAll(new Sort(Sort.Direction.DESC, "rougelScoreT", "bleu4ScoreT", "commitDateT"));
+            case 1:
+                return userRepository.findAll(new Sort(Sort.Direction.DESC, "rougelScoreP", "bleu4ScoreP", "commitDateP"));
+            case 2:
+                return userRepository.findAll(new Sort(Sort.Direction.DESC, "rougelScoreF", "bleu4ScoreF", "commitDateF"));
+            default:
+                throw new RuntimeException("查询类型产品错误");
+        }
     }
 }

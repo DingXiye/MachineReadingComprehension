@@ -33,6 +33,11 @@ public class UserController {
         return ResultService.resultBuilder(loginUser);
     }
 
+    @GetMapping(value = "/ranking")
+    public ResultEntity userRanking(@AuthenticationPrincipal UserEntity loginUser, @RequestParam(value = "type") int type) {
+        return ResultService.resultBuilder(userService.userRanking(type));
+    }
+
     // 建立普通用户
     @PostMapping
     public ResultEntity saveUser(@RequestParam(value = "badge") MultipartFile badge, @RequestParam(value = "username") String username, @RequestParam(value = "password") String password, @RequestParam(value = "email") String email, @RequestParam(value = "telephoneNumber") String telephoneNumber, @RequestParam(value = "name") String name, @RequestParam(value = "age") int age, @RequestParam(value = "sex") int sex, @RequestParam(value = "teamName") String teamName, @RequestParam(value = "organization") String organization) throws IOException {
@@ -64,11 +69,13 @@ public class UserController {
         return ResultService.resultBuilder(userService.patchUserPassword(userId, password));
     }
 
+    // 忘记密码检查
     @PostMapping(value = "/forgetpasswordcheck")
     public ResultEntity forgetpasswordcheck(UserEntity userEntity) {
         return ResultService.resultBuilder(userService.forgetpasswordcheck(userEntity));
     }
 
+    // 忘记密码
     @PostMapping(value = "/forgetpassword")
     public ResultEntity forgetPassword(UserEntity userEntity) {
         return ResultService.resultBuilder(userService.forgetPassword(userEntity));
@@ -125,9 +132,19 @@ public class UserController {
         httpServletResponse.flushBuffer();
     }
 
+    // 提交文件
     @PutMapping(value = "/{userId}/commitfile")
-    public ResultEntity commitFile(@PathVariable(value = "userId") String userId, @RequestParam(value = "ref") MultipartFile ref, @RequestParam(value = "pred") MultipartFile pred) throws IOException {
-        return ResultService.resultBuilder(userService.commitFile(userId, ref, pred));
+    public ResultEntity commitFile(@PathVariable(value = "userId") String userId, @RequestParam(value = "ref") MultipartFile ref, @RequestParam(value = "type") int type) throws IOException {
+        switch (type) {
+            case 0:
+                return ResultService.resultBuilder(userService.commitFile_T(userId, ref));
+            case 1:
+                return ResultService.resultBuilder(userService.commitFile_P(userId, ref));
+            case 2:
+                return ResultService.resultBuilder(userService.commitFile_F(userId, ref));
+            default:
+                throw new RuntimeException("类型错误");
+        }
     }
 
     // 保存团队成员
@@ -142,21 +159,31 @@ public class UserController {
         return ResultService.resultBuilder(userService.deleteCrew(userId, crewId));
     }
 
+    // 修改团队成员
     @PatchMapping(value = "/{userId}/crew/{crewId}")
     public ResultEntity patchCrew(@PathVariable(value = "userId") String userId, @PathVariable(value = "crewId") String crewId, CrewEntity crewArgs) {
         return ResultService.resultBuilder(userService.patchCrew(userId, crewId, crewArgs));
     }
 
+    // 查询团队成员
     @GetMapping(value = "/{userId}/crew/{crewId}")
     public ResultEntity getCrewById(@PathVariable(value = "userId") String userId, @PathVariable(value = "crewId") String crewId) {
         return ResultService.resultBuilder(userService.getCrewById(userId, crewId));
     }
 
+    // 查询谈队成员
     @GetMapping(value = "/{userId}/crew")
     public ResultEntity getCrewByUserId(@PathVariable(value = "userId") String userId) {
         return ResultService.resultBuilder(userService.getCrewByUserId(userId));
     }
 
+    // 查询成绩历史
+    @GetMapping(value = "/{userId}/scorelogsbytype")
+    public ResultEntity getScoreLogByUser(@PathVariable(value = "userId") String userId, @RequestParam(value = "type") int type) {
+        return ResultService.resultBuilder(userService.getScoreLogByUserAndType(userId, type));
+    }
+
+    // 查询成绩历史
     @GetMapping(value = "/{userId}/scorelogs")
     public ResultEntity getScoreLogByUser(@PathVariable(value = "userId") String userId) {
         return ResultService.resultBuilder(userService.getScoreLogByUser(userId));

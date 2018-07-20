@@ -2,7 +2,9 @@ package com.rengu.machinereadingcomprehension.Utils;
 
 public class ApplicationConfig {
 
-    public static int MAX_COMMIT_TIMES = 4;
+    public static int MAX_COMMIT_TIMES_T = 4;
+    public static int MAX_COMMIT_TIMES_P = 4;
+    public static int MAX_COMMIT_TIMES_F = 4;
 
     // 默认角色
     public static String DEFAULT_ADMIN_ROLE_NAME = "admin";
