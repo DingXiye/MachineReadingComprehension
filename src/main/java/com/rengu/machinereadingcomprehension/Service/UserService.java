@@ -464,11 +464,11 @@ public class UserService implements UserDetailsService {
     public List<UserEntity> userRanking(int type) {
         switch (type) {
             case 0:
-                return userRepository.findAll(new Sort(Sort.Direction.DESC, "rougelScoreT", "bleu4ScoreT", "commitDateT"));
+                return userRepository.findByTeamNameNotNull(new Sort(new Sort.Order(Sort.Direction.DESC, "rougelScoreT"), new Sort.Order(Sort.Direction.DESC, "bleu4ScoreT"), new Sort.Order(Sort.Direction.ASC, "commitDateT")));
             case 1:
-                return userRepository.findAll(new Sort(Sort.Direction.DESC, "rougelScoreP", "bleu4ScoreP", "commitDateP"));
+                return userRepository.findByTeamNameNotNull(new Sort(new Sort.Order(Sort.Direction.DESC, "rougelScoreP"), new Sort.Order(Sort.Direction.DESC, "bleu4ScoreP"), new Sort.Order(Sort.Direction.ASC, "commitDateP")));
             case 2:
-                return userRepository.findAll(new Sort(Sort.Direction.DESC, "rougelScoreF", "bleu4ScoreF", "commitDateF"));
+                return userRepository.findByTeamNameNotNull(new Sort(new Sort.Order(Sort.Direction.DESC, "rougelScoreF"), new Sort.Order(Sort.Direction.DESC, "bleu4ScoreF"), new Sort.Order(Sort.Direction.ASC, "commitDateF")));
             default:
                 throw new RuntimeException("查询类型产品错误");
         }

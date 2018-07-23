@@ -4,14 +4,12 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -225,23 +223,23 @@ public class Metric {
  * Bleu 算法用于评价及其翻译的准确度
  */
 class Bleu {
-    private static int BLEU_N;
+    private static int BLEU_N = 4;
 
-    static {
-        Properties prop = new Properties();
-        try {
-            //读取属性文件
-            Resource resource = new ClassPathResource("args.properties");
-            InputStream in = new BufferedInputStream(new FileInputStream(resource.getFile()));
-            prop.load(in);  //加载属性列表
-            String num = prop.getProperty("ROUGE_N");
-            BLEU_N = Integer.parseInt(num);
-//            System.out.println("BLEU_N: " + BLEU_N);
-            in.close();
-        } catch (IOException e) {
-            e.getStackTrace();
-        }
-    }
+//    static {
+//        Properties prop = new Properties();
+//        try {
+//            //读取属性文件
+//            Resource resource = new ClassPathResource("args.properties");
+//            InputStream in = new BufferedInputStream(resource.getInputStream());
+//            prop.load(in);  //加载属性列表
+//            String num = prop.getProperty("ROUGE_N");
+//            BLEU_N = Integer.parseInt(num);
+////            System.out.println("BLEU_N: " + BLEU_N);
+//            in.close();
+//        } catch (IOException e) {
+//            e.getStackTrace();
+//        }
+//    }
 
     private long[] matchNGrams;
     private long[] candiNGrams;
@@ -412,22 +410,22 @@ class Bleu {
 
 class RougeL {
 
-    private static double GAMMA;
+    private static double GAMMA = 1.2;
 
-    static {
-        Properties prop = new Properties();
-        try {
-            // 加载配置文件
-            Resource resource = new ClassPathResource("args.properties");
-            InputStream in = new BufferedInputStream(new FileInputStream(resource.getFile()));
-            prop.load(in);  //加载属性列表c
-            GAMMA = Double.parseDouble(prop.getProperty("GAMMA"));
-//            System.out.println("GAMMA: " + GAMMA);
-            in.close();
-        } catch (IOException e) {
-            e.getStackTrace();
-        }
-    }
+//    static {
+//        Properties prop = new Properties();
+//        try {
+//            // 加载配置文件
+//            Resource resource = new ClassPathResource("args.properties");
+//            InputStream in = new BufferedInputStream(resource.getInputStream());
+//            prop.load(in);  //加载属性列表c
+//            GAMMA = Double.parseDouble(prop.getProperty("GAMMA"));
+////            System.out.println("GAMMA: " + GAMMA);
+//            in.close();
+//        } catch (IOException e) {
+//            e.getStackTrace();
+//        }
+//    }
 
     private double scoreSum;
     private int scoreSize;
@@ -489,8 +487,11 @@ class RougeL {
      */
     public void addInstance(String candSent, String refSent) {
         // 判断是否为空
-        if (candSent == null || refSent == null) {
+        if (refSent == null) {
             return;
+        }
+        if (candSent == null) {
+            candSent = "";
         }
 
         // 获取字符串长度

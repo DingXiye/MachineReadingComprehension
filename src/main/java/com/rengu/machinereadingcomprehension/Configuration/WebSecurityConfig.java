@@ -56,6 +56,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers(HttpMethod.POST, "/users").permitAll();
         http.authorizeRequests().antMatchers(HttpMethod.POST, "/users/forgetpasswordcheck").permitAll();
         http.authorizeRequests().antMatchers(HttpMethod.POST, "/users/forgetpassword").permitAll();
+        http.authorizeRequests().antMatchers(HttpMethod.GET, "/users/ranking").permitAll();
         http.authorizeRequests().anyRequest().authenticated();
     }
 }

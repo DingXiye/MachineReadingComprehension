@@ -7,11 +7,10 @@ import com.rengu.machinereadingcomprehension.Utils.Metric;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -44,8 +43,14 @@ public class ScoreLogService {
         // 接收文件
         File resultFile = new File(FileUtils.getUserDirectoryPath() + "/User_Result/" + userEntity.getTeamName() + "_" + simpleDateFormat.format(new Date()) + "." + FilenameUtils.getExtension(multipartFile.getOriginalFilename()));
         FileUtils.copyInputStreamToFile(multipartFile.getInputStream(), resultFile);
-        Resource resource = new ClassPathResource("question.json");
-        File answerFile = resource.getFile();
+        File answerFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("classes/", "") + "question.json");
+        if (!answerFile.exists()) {
+            answerFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("file:/", "").replace("machine-reading-comprehension-0.0.1-SNAPSHOT.jar!/BOOT-INF/classes!/", "") + "question.json");
+            if (!answerFile.exists()) {
+                throw new RuntimeException("服务器文件异常，请检查服务器配置。");
+            }
+        }
+        System.out.println(answerFile.getAbsolutePath());
         ConcurrentHashMap<String, Double> resultMap = Metric.getScore(answerFile, resultFile);
         ScoreLogEntity scoreLogEntity = new ScoreLogEntity();
         scoreLogEntity.setUserEntity(userEntity);
