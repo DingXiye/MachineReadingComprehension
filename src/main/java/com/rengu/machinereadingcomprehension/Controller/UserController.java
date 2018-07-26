@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Date;
 
 @RestController
 @RequestMapping(value = "/users")
@@ -187,5 +188,10 @@ public class UserController {
     @GetMapping(value = "/{userId}/scorelogs")
     public ResultEntity getScoreLogByUser(@PathVariable(value = "userId") String userId) {
         return ResultService.resultBuilder(userService.getScoreLogByUser(userId));
+    }
+
+    @GetMapping(value = "/time")
+    public ResultEntity getTime() {
+        return ResultService.resultBuilder(new Date().getTime());
     }
 }
