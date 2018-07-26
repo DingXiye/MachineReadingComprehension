@@ -1,6 +1,7 @@
 package com.rengu.machinereadingcomprehension.Entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.rengu.machinereadingcomprehension.Utils.ApplicationConfig;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -38,17 +39,17 @@ public class UserEntity implements UserDetails, Serializable {
     private double rougelScoreT;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date commitDateT;
-    private int commitTimesT;
+    private int commitTimesT = ApplicationConfig.MAX_COMMIT_TIMES_T;
     private double bleu4ScoreP;
     private double rougelScoreP;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date commitDateP;
-    private int commitTimesP;
+    private int commitTimesP = ApplicationConfig.MAX_COMMIT_TIMES_P;
     private double bleu4ScoreF;
     private double rougelScoreF;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date commitDateF;
-    private int commitTimesF;
+    private int commitTimesF = ApplicationConfig.MAX_COMMIT_TIMES_F;
     @ManyToMany(fetch = FetchType.EAGER)
     private List<RoleEntity> roleEntities;
 
