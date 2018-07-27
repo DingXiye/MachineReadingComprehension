@@ -464,11 +464,35 @@ public class UserService implements UserDetailsService {
     public List<UserEntity> userRanking(int type) {
         switch (type) {
             case 0:
-                return userRepository.findByTeamNameNotNull(new Sort(new Sort.Order(Sort.Direction.DESC, "rougelScoreT"), new Sort.Order(Sort.Direction.DESC, "bleu4ScoreT"), new Sort.Order(Sort.Direction.ASC, "commitDateT")));
+                List<UserEntity> userEntityListT = userRepository.findByTeamNameNotNull(new Sort(new Sort.Order(Sort.Direction.DESC, "rougelScoreT"), new Sort.Order(Sort.Direction.DESC, "bleu4ScoreT"), new Sort.Order(Sort.Direction.ASC, "commitDateT")));
+                Iterator<UserEntity> userEntityIteratorT = userEntityListT.iterator();
+                while (userEntityIteratorT.hasNext()) {
+                    UserEntity userEntity = userEntityIteratorT.next();
+                    if (userEntity.getCommitDateT() == null) {
+                        userEntityIteratorT.remove();//使用迭代器的删除方法删除
+                    }
+                }
+                return userEntityListT;
             case 1:
-                return userRepository.findByTeamNameNotNull(new Sort(new Sort.Order(Sort.Direction.DESC, "rougelScoreP"), new Sort.Order(Sort.Direction.DESC, "bleu4ScoreP"), new Sort.Order(Sort.Direction.ASC, "commitDateP")));
+                List<UserEntity> userEntityListP = userRepository.findByTeamNameNotNull(new Sort(new Sort.Order(Sort.Direction.DESC, "rougelScoreP"), new Sort.Order(Sort.Direction.DESC, "bleu4ScoreP"), new Sort.Order(Sort.Direction.ASC, "commitDateP")));
+                Iterator<UserEntity> userEntityIteratorP = userEntityListP.iterator();
+                while (userEntityIteratorP.hasNext()) {
+                    UserEntity userEntity = userEntityIteratorP.next();
+                    if (userEntity.getCommitDateP() == null) {
+                        userEntityIteratorP.remove();//使用迭代器的删除方法删除
+                    }
+                }
+                return userEntityListP;
             case 2:
-                return userRepository.findByTeamNameNotNull(new Sort(new Sort.Order(Sort.Direction.DESC, "rougelScoreF"), new Sort.Order(Sort.Direction.DESC, "bleu4ScoreF"), new Sort.Order(Sort.Direction.ASC, "commitDateF")));
+                List<UserEntity> userEntityListF = userRepository.findByTeamNameNotNull(new Sort(new Sort.Order(Sort.Direction.DESC, "rougelScoreF"), new Sort.Order(Sort.Direction.DESC, "bleu4ScoreF"), new Sort.Order(Sort.Direction.ASC, "commitDateF")));
+                Iterator<UserEntity> userEntityIteratorF = userEntityListF.iterator();
+                while (userEntityIteratorF.hasNext()) {
+                    UserEntity userEntity = userEntityIteratorF.next();
+                    if (userEntity.getCommitDateP() == null) {
+                        userEntityIteratorF.remove();//使用迭代器的删除方法删除
+                    }
+                }
+                return userEntityListF;
             default:
                 throw new RuntimeException("查询类型产品错误");
         }
