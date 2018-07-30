@@ -268,8 +268,8 @@ class Bleu {
             return;
         }
         // 如果答卷答案为null初始化为""
-        if (candSent == null || candSent.equals("")) {
-            return;
+        if (candSent == null) {
+            candSent = "";
         }
 
         int refSentSize = refSent.length();
@@ -367,20 +367,11 @@ class Bleu {
      * @return Bleu分数
      */
     public double getScore() {
-//        if (candidate == null || refrence == null) {
-//            return 0;
-//        }
-        // 预处理
-//        refrence = PreProcess.processString(refrence);
-//        candidate = PreProcess.processString(candidate);
-        // 计算长度
-//        int refLength = refrence.length();
-//        int candLength = candidate.length();
+        // 如果存储的答案长度为0，返回0
+        if (this.BPC == 0) {
+            return 0;
+        }
 
-//        if (refLength == 0 || candLength == 0) {
-//            return 0;
-//        }
-        // numSize 取三个长度的最小值，避免getNGram返回null
         double[] probArray = new double[BLEU_N];
 
         for (int i = 0; i < probArray.length; i++) {
@@ -406,6 +397,23 @@ class Bleu {
         return score;
     }
 
+    public void showMatchNGram() {
+        System.out.print("match ngrams size: ");
+        for (int i = 0; i < this.matchNGrams.length; i++) {
+            System.out.print(this.matchNGrams[i] + ", ");
+        }
+        System.out.println(".");
+        System.out.print("candidate ngrams size: ");
+        for (int i = 0; i < this.candiNGrams.length; i++) {
+            System.out.print(this.candiNGrams[i] + ", ");
+        }
+        System.out.println(".");
+    }
+
+    public void showBP() {
+        System.out.println("BP candidate size: " + this.BPC);
+        System.out.println("BP reference size: " + this.BPR);
+    }
 }
 
 class RougeL {
@@ -436,18 +444,6 @@ class RougeL {
     public RougeL() {
         this.scoreSum = 0.0;
         this.scoreSize = 0;
-    }
-
-    public static void main(String[] args) {
-        String candidate = "我是孙维松";
-        String refrences = "孙维松是我";
-
-        RougeL rougeLScorer = new RougeL();
-        int lcs = rougeLScorer.getLCS(candidate, refrences);
-        System.out.println("LCS: " + lcs);
-
-        double score = rougeLScorer.getScore();
-        System.out.println("RougeL score: " + score);
     }
 
     /**
@@ -486,10 +482,11 @@ class RougeL {
      * @param refSent  参考答案句子
      */
     public void addInstance(String candSent, String refSent) {
-        // 判断是否为空
-        if (refSent == null) {
+        // 判断参考答案是否为空，参考答案为空时，不能进行评测
+        if (refSent == null || refSent.equals("")) {
             return;
         }
+        // 如果答卷为
         if (candSent == null) {
             candSent = "";
         }
@@ -499,19 +496,19 @@ class RougeL {
         int refsLength = refSent.length();
 
         double score = 0;
-        if (candLength > 0 && refsLength > 0) {
+        if (candLength > 0) {
             // 计算最大公共子序列表
             int lcs = getLCS(candSent, refSent);
-            // 计算准确率
-            double precs = lcs * 1.0 / candLength;
-            // 计算召回率
-            double recall = lcs * 1.0 / refsLength;
+            if (lcs != 0) {
+                // 计算准确率
+                double precs = lcs * 1.0 / candLength;
+                // 计算召回率
+                double recall = lcs * 1.0 / refsLength;
 
-            // 计算RougeL分数
-            score = (1 + Math.pow(GAMMA, 2)) * recall * precs;
-            score /= recall + Math.pow(GAMMA, 2) * precs;
-        } else if (refsLength == 0) {
-            return;
+                // 计算RougeL分数
+                score = (1 + Math.pow(GAMMA, 2)) * recall * precs;
+                score /= recall + Math.pow(GAMMA, 2) * precs;
+            }
         }
 
         this.scoreSum += score;
@@ -524,7 +521,11 @@ class RougeL {
      * @return RougeL分数, 如果句子中存在空的字符串返回null
      */
     public double getScore() {
-        return this.scoreSum / this.scoreSize;
+        if (this.scoreSize == 0) {
+            return 0;
+        } else {
+            return this.scoreSum / this.scoreSize;
+        }
     }
 }
 
