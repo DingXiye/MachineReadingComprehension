@@ -45,7 +45,7 @@ public class ScoreLogService {
         FileUtils.copyInputStreamToFile(multipartFile.getInputStream(), resultFile);
         File answerFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("classes/", "") + "question.json");
         if (!answerFile.exists()) {
-            answerFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("file:/", "").replace("machine-reading-comprehension-0.0.1-SNAPSHOT.jar!/BOOT-INF/classes!/", "") + "question.json");
+            answerFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("file:/", "/").replace("machine-reading-comprehension-0.0.1-SNAPSHOT.jar!/BOOT-INF/classes!/", "") + "question.json");
             if (!answerFile.exists()) {
                 throw new RuntimeException("服务器文件异常，请检查服务器配置。");
             }

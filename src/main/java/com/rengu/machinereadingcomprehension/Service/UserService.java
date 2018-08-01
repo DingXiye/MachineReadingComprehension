@@ -342,8 +342,8 @@ public class UserService implements UserDetailsService {
         if (scoreLogEntity.getROUGE_Score() > userEntity.getRougelScoreT()) {
             userEntity.setRougelScoreT(scoreLogEntity.getROUGE_Score());
             userEntity.setBleu4ScoreT(scoreLogEntity.getBLEU_4_Score());
-            userEntity.setCommitDateT(new Date());
         }
+        userEntity.setCommitDateT(new Date());
         return userRepository.save(userEntity);
     }
 
@@ -369,8 +369,8 @@ public class UserService implements UserDetailsService {
         if (scoreLogEntity.getROUGE_Score() > userEntity.getRougelScoreP()) {
             userEntity.setRougelScoreP(scoreLogEntity.getROUGE_Score());
             userEntity.setBleu4ScoreP(scoreLogEntity.getBLEU_4_Score());
-            userEntity.setCommitDateP(new Date());
         }
+        userEntity.setCommitDateP(new Date());
         return userRepository.save(userEntity);
     }
 
@@ -396,8 +396,8 @@ public class UserService implements UserDetailsService {
         if (scoreLogEntity.getROUGE_Score() > userEntity.getRougelScoreF()) {
             userEntity.setRougelScoreF(scoreLogEntity.getROUGE_Score());
             userEntity.setBleu4ScoreF(scoreLogEntity.getBLEU_4_Score());
-            userEntity.setCommitDateF(new Date());
         }
+        userEntity.setCommitDateF(new Date());
         return userRepository.save(userEntity);
     }
 
