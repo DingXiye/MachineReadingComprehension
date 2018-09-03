@@ -39,4 +39,9 @@ public class DownLoadLogController {
     public ResultEntity saveDownloadLog() {
         return ResultService.resultBuilder(downLoadLogService.countDownloadLogs());
     }
+
+    @GetMapping(value = "/users")
+    public ResultEntity getUsers(@AuthenticationPrincipal UserEntity loginUser) {
+        return ResultService.resultBuilder(downLoadLogService.getUsers(loginUser));
+    }
 }

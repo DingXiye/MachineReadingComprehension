@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * @program: machine-reading-comprehension
  * @author: hanch
@@ -37,5 +39,9 @@ public class DownLoadLogService {
 
     public long countDownloadLogsByType(int type) {
         return downLoadLogRepository.countByType(type);
+    }
+
+    public List<DownLoadLogEntity> getUsers(UserEntity loginUser) {
+        return downLoadLogRepository.findDistinctByUserEntity(loginUser);
     }
 }
