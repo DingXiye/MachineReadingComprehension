@@ -41,7 +41,7 @@ public class DownLoadLogController {
     }
 
     @GetMapping(value = "/users")
-    public ResultEntity getUsers(@AuthenticationPrincipal UserEntity loginUser) {
-        return ResultService.resultBuilder(downLoadLogService.getUsers(loginUser));
+    public ResultEntity getUsersByType(@AuthenticationPrincipal UserEntity loginUser, @RequestParam(value = "type") int type) {
+        return ResultService.resultBuilder(downLoadLogService.getUsersByType(type));
     }
 }

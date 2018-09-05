@@ -1,7 +1,6 @@
 package com.rengu.machinereadingcomprehension.Repository;
 
 import com.rengu.machinereadingcomprehension.Entity.DownLoadLogEntity;
-import com.rengu.machinereadingcomprehension.Entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -18,5 +17,5 @@ public interface DownLoadLogRepository extends JpaRepository<DownLoadLogEntity, 
 
     long countByType(int type);
 
-    List<DownLoadLogEntity> findDistinctByUserEntity(UserEntity userEntity);
+    List<DownLoadLogEntity> findByType(int type);
 }

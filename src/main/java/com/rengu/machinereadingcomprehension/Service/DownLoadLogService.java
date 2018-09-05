@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,7 +42,13 @@ public class DownLoadLogService {
         return downLoadLogRepository.countByType(type);
     }
 
-    public List<DownLoadLogEntity> getUsers(UserEntity loginUser) {
-        return downLoadLogRepository.findDistinctByUserEntity(loginUser);
+    public List<UserEntity> getUsersByType(int type) {
+        List<UserEntity> userEntities = new ArrayList<>();
+        for (DownLoadLogEntity downLoadLogEntity : downLoadLogRepository.findByType(type)) {
+            if (!userEntities.contains(downLoadLogEntity.getUserEntity())) {
+                userEntities.add(downLoadLogEntity.getUserEntity());
+            }
+        }
+        return userEntities;
     }
 }
