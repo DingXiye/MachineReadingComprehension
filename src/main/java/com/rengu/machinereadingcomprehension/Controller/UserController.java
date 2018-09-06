@@ -135,7 +135,7 @@ public class UserController {
 
     // 提交文件
     @PutMapping(value = "/{userId}/commitfile")
-    public ResultEntity commitFile(@PathVariable(value = "userId") String userId, @RequestParam(value = "ref") MultipartFile ref, @RequestParam(value = "type") int type) throws IOException {
+    public ResultEntity commitFile(@PathVariable(value = "userId") String userId, @RequestParam(value = "ref") MultipartFile ref, @RequestParam(value = "type") int type) throws Exception {
         switch (type) {
             case 0:
                 return ResultService.resultBuilder(userService.commitFile_T(userId, ref));

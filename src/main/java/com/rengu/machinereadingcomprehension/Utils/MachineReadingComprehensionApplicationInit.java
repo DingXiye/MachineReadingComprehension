@@ -9,6 +9,9 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.util.ClassUtils;
+
+import java.io.File;
 
 @Order(value = 1)
 @Configuration
@@ -24,7 +27,7 @@ public class MachineReadingComprehensionApplicationInit implements ApplicationRu
     }
 
     @Override
-    public void run(ApplicationArguments args) {
+    public void run(ApplicationArguments args) throws Exception {
         // 管理员角色
         if (!roleService.hasRoleByName(ApplicationConfig.DEFAULT_ADMIN_ROLE_NAME)) {
             RoleEntity roleArgs = new RoleEntity();

@@ -3,6 +3,8 @@ package com.rengu.machinereadingcomprehension.Service;
 import com.rengu.machinereadingcomprehension.Entity.ScoreLogEntity;
 import com.rengu.machinereadingcomprehension.Entity.UserEntity;
 import com.rengu.machinereadingcomprehension.Repository.ScoreLogRepository;
+import com.rengu.machinereadingcomprehension.Utils.AESUtils;
+import com.rengu.machinereadingcomprehension.Utils.ApplicationConfig;
 import com.rengu.machinereadingcomprehension.Utils.Metric;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -14,7 +16,6 @@ import org.springframework.util.ClassUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -39,18 +40,22 @@ public class ScoreLogService {
     }
 
     // 保存成绩历史
-    public ScoreLogEntity saveScoreLog(UserEntity userEntity, MultipartFile multipartFile, int type) throws IOException {
+    public ScoreLogEntity saveScoreLog(UserEntity userEntity, MultipartFile multipartFile, int type) throws Exception {
         // 接收文件
         File resultFile = new File(FileUtils.getUserDirectoryPath() + "/User_Result/" + userEntity.getTeamName() + "_" + simpleDateFormat.format(new Date()) + "." + FilenameUtils.getExtension(multipartFile.getOriginalFilename()));
         FileUtils.copyInputStreamToFile(multipartFile.getInputStream(), resultFile);
-        File answerFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("classes/", "") + "question.json");
-        if (!answerFile.exists()) {
-            answerFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("file:/", "/").replace("machine-reading-comprehension-0.0.1-SNAPSHOT.jar!/BOOT-INF/classes!/", "") + "question.json");
-            if (!answerFile.exists()) {
-                throw new RuntimeException("服务器文件异常，请检查服务器配置。");
+        File answerFile = ApplicationConfig.answerFile;
+        if (answerFile == null) {
+            File encryptFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("classes/", "") + "encrypt.json");
+            if (!encryptFile.exists()) {
+                encryptFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("file:/", "/").replace("machine-reading-comprehension-0.0.1-SNAPSHOT.jar!/BOOT-INF/classes!/", "") + "encrypt.json");
+                if (!encryptFile.exists()) {
+                    throw new RuntimeException("服务器文件异常，请检查服务器配置。");
+                }
             }
+            ApplicationConfig.answerFile = AESUtils.decrypt(encryptFile, ApplicationConfig.ENCRYPT_AES_KEY, ApplicationConfig.RSA_PUBLIC_KEY);
+            answerFile = ApplicationConfig.answerFile;
         }
-        System.out.println(answerFile.getAbsolutePath());
         ConcurrentHashMap<String, Double> resultMap = Metric.getScore(answerFile, resultFile);
         ScoreLogEntity scoreLogEntity = new ScoreLogEntity();
         scoreLogEntity.setUserEntity(userEntity);

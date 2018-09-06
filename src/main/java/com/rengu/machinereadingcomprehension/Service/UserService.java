@@ -320,7 +320,7 @@ public class UserService implements UserDetailsService {
         return resultUserEntityList;
     }
 
-    public UserEntity commitFile_T(String userId, MultipartFile ref) throws IOException {
+    public UserEntity commitFile_T(String userId, MultipartFile ref) throws Exception {
         if (StringUtils.isEmpty(userId)) {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ID_PARAM_NOT_FOUND);
         }
@@ -347,7 +347,7 @@ public class UserService implements UserDetailsService {
         return userRepository.save(userEntity);
     }
 
-    public UserEntity commitFile_P(String userId, MultipartFile ref) throws IOException {
+    public UserEntity commitFile_P(String userId, MultipartFile ref) throws Exception {
         if (StringUtils.isEmpty(userId)) {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ID_PARAM_NOT_FOUND);
         }
@@ -374,7 +374,7 @@ public class UserService implements UserDetailsService {
         return userRepository.save(userEntity);
     }
 
-    public UserEntity commitFile_F(String userId, MultipartFile ref) throws IOException {
+    public UserEntity commitFile_F(String userId, MultipartFile ref) throws Exception {
         if (StringUtils.isEmpty(userId)) {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ID_PARAM_NOT_FOUND);
         }
