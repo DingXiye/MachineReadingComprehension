@@ -44,43 +44,40 @@ public class ScoreLogService {
         // 接收文件
         File resultFile = new File(FileUtils.getUserDirectoryPath() + "/User_Result/" + userEntity.getTeamName() + "_" + simpleDateFormat.format(new Date()) + "." + FilenameUtils.getExtension(multipartFile.getOriginalFilename()));
         FileUtils.copyInputStreamToFile(multipartFile.getInputStream(), resultFile);
-        File answerFile = ApplicationConfig.answerFile;
-        if (answerFile == null) {
-            File encryptFile = null;
+        File answerFile = null;
+        File encryptFile = null;
+        switch (type) {
+            case 0:
+                encryptFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("classes/", "") + "encrypt.json");
+                break;
+            case 1:
+                encryptFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("classes/", "") + "encryptP.json");
+                break;
+            case 2:
+                encryptFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("classes/", "") + "encryptF.json");
+                break;
+            default:
+                throw new RuntimeException("未知的请求类型");
+        }
+        if (!encryptFile.exists()) {
             switch (type) {
                 case 0:
-                    encryptFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("classes/", "") + "encrypt.json");
+                    encryptFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("file:/", "/").replace("machine-reading-comprehension-0.0.1-SNAPSHOT.jar!/BOOT-INF/classes!/", "") + "encrypt.json");
                     break;
                 case 1:
-                    encryptFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("classes/", "") + "encryptP.json");
+                    encryptFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("file:/", "/").replace("machine-reading-comprehension-0.0.1-SNAPSHOT.jar!/BOOT-INF/classes!/", "") + "encryptP.json");
                     break;
                 case 2:
-                    encryptFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("classes/", "") + "encryptF.json");
+                    encryptFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("file:/", "/").replace("machine-reading-comprehension-0.0.1-SNAPSHOT.jar!/BOOT-INF/classes!/", "") + "encryptF.json");
                     break;
                 default:
                     throw new RuntimeException("未知的请求类型");
             }
             if (!encryptFile.exists()) {
-                switch (type) {
-                    case 0:
-                        encryptFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("file:/", "/").replace("machine-reading-comprehension-0.0.1-SNAPSHOT.jar!/BOOT-INF/classes!/", "") + "encrypt.json");
-                        break;
-                    case 1:
-                        encryptFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("file:/", "/").replace("machine-reading-comprehension-0.0.1-SNAPSHOT.jar!/BOOT-INF/classes!/", "") + "encryptP.json");
-                        break;
-                    case 2:
-                        encryptFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("file:/", "/").replace("machine-reading-comprehension-0.0.1-SNAPSHOT.jar!/BOOT-INF/classes!/", "") + "encryptF.json");
-                        break;
-                    default:
-                        throw new RuntimeException("未知的请求类型");
-                }
-                if (!encryptFile.exists()) {
-                    throw new RuntimeException("服务器文件异常，请检查服务器配置。");
-                }
+                throw new RuntimeException("服务器文件异常，请检查服务器配置。");
             }
-            ApplicationConfig.answerFile = AESUtils.decrypt(encryptFile, ApplicationConfig.ENCRYPT_AES_KEY, ApplicationConfig.RSA_PUBLIC_KEY);
-            answerFile = ApplicationConfig.answerFile;
         }
+        answerFile = AESUtils.decrypt(encryptFile, ApplicationConfig.ENCRYPT_AES_KEY, ApplicationConfig.RSA_PUBLIC_KEY);
         ConcurrentHashMap<String, Double> resultMap = Metric.getScore(answerFile, resultFile);
         ScoreLogEntity scoreLogEntity = new ScoreLogEntity();
         scoreLogEntity.setUserEntity(userEntity);
