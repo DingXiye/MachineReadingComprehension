@@ -46,9 +46,34 @@ public class ScoreLogService {
         FileUtils.copyInputStreamToFile(multipartFile.getInputStream(), resultFile);
         File answerFile = ApplicationConfig.answerFile;
         if (answerFile == null) {
-            File encryptFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("classes/", "") + "encrypt.json");
+            File encryptFile = null;
+            switch (type) {
+                case 0:
+                    encryptFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("classes/", "") + "encrypt.json");
+                    break;
+                case 1:
+                    encryptFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("classes/", "") + "encrypt.json");
+                    break;
+                case 2:
+                    encryptFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("classes/", "") + "encrypt.json");
+                    break;
+                default:
+                    throw new RuntimeException("未知的请求类型");
+            }
             if (!encryptFile.exists()) {
-                encryptFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("file:/", "/").replace("machine-reading-comprehension-0.0.1-SNAPSHOT.jar!/BOOT-INF/classes!/", "") + "encrypt.json");
+                switch (type) {
+                    case 0:
+                        encryptFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("file:/", "/").replace("machine-reading-comprehension-0.0.1-SNAPSHOT.jar!/BOOT-INF/classes!/", "") + "encrypt.json");
+                        break;
+                    case 1:
+                        encryptFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("file:/", "/").replace("machine-reading-comprehension-0.0.1-SNAPSHOT.jar!/BOOT-INF/classes!/", "") + "encrypt.json");
+                        break;
+                    case 2:
+                        encryptFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("file:/", "/").replace("machine-reading-comprehension-0.0.1-SNAPSHOT.jar!/BOOT-INF/classes!/", "") + "encrypt.json");
+                        break;
+                    default:
+                        throw new RuntimeException("未知的请求类型");
+                }
                 if (!encryptFile.exists()) {
                     throw new RuntimeException("服务器文件异常，请检查服务器配置。");
                 }
