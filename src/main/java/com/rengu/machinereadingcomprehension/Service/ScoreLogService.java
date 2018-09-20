@@ -91,6 +91,10 @@ public class ScoreLogService {
         return scoreLogRepository.findByUserEntityIdAndType(new Sort(Sort.Direction.DESC, "createTime"), userEntity.getId(), Type);
     }
 
+    public boolean hasScoreLogByUserAndType(UserEntity userEntity, int type) {
+        return scoreLogRepository.existsByUserEntityAndType(userEntity, type);
+    }
+
     public List<ScoreLogEntity> getScoreLogByUser(UserEntity userEntity) {
         return scoreLogRepository.findByUserEntityId(new Sort(Sort.Direction.DESC, "createTime"), userEntity.getId());
     }

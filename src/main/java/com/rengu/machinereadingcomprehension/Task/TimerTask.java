@@ -30,5 +30,6 @@ public class TimerTask {
             userEntity.setCommitTimesF(ApplicationConfig.MAX_COMMIT_TIMES_F);
         }
         userRepository.saveAll(userEntities);
+        System.out.println("已刷新提交次数限制。");
     }
 }

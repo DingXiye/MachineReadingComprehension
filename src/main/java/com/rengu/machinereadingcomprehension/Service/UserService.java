@@ -468,7 +468,7 @@ public class UserService implements UserDetailsService {
                 Iterator<UserEntity> userEntityIteratorT = userEntityListT.iterator();
                 while (userEntityIteratorT.hasNext()) {
                     UserEntity userEntity = userEntityIteratorT.next();
-                    if (userEntity.getCommitDateT() == null) {
+                    if (userEntity.getCommitDateT() == null || !scoreLogService.hasScoreLogByUserAndType(userEntity, type)) {
                         userEntityIteratorT.remove();//使用迭代器的删除方法删除
                     }
                 }
@@ -478,7 +478,7 @@ public class UserService implements UserDetailsService {
                 Iterator<UserEntity> userEntityIteratorP = userEntityListP.iterator();
                 while (userEntityIteratorP.hasNext()) {
                     UserEntity userEntity = userEntityIteratorP.next();
-                    if (userEntity.getCommitDateP() == null) {
+                    if (userEntity.getCommitDateP() == null || !scoreLogService.hasScoreLogByUserAndType(userEntity, type)) {
                         userEntityIteratorP.remove();//使用迭代器的删除方法删除
                     }
                 }
@@ -488,7 +488,7 @@ public class UserService implements UserDetailsService {
                 Iterator<UserEntity> userEntityIteratorF = userEntityListF.iterator();
                 while (userEntityIteratorF.hasNext()) {
                     UserEntity userEntity = userEntityIteratorF.next();
-                    if (userEntity.getCommitDateP() == null) {
+                    if (userEntity.getCommitDateP() == null || !scoreLogService.hasScoreLogByUserAndType(userEntity, type)) {
                         userEntityIteratorF.remove();//使用迭代器的删除方法删除
                     }
                 }
