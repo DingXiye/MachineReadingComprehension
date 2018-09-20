@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -496,5 +497,19 @@ public class UserService implements UserDetailsService {
             default:
                 throw new RuntimeException("查询类型产品错误");
         }
+    }
+
+    public List<UserEntity> formatValue() {
+        List<UserEntity> userEntityList = getUser();
+        for (UserEntity userEntity : userEntityList) {
+            userEntity.setRougelScoreT(new BigDecimal(userEntity.getRougelScoreT()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+            userEntity.setRougelScoreP(new BigDecimal(userEntity.getRougelScoreP()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+            userEntity.setRougelScoreF(new BigDecimal(userEntity.getRougelScoreF()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+            userEntity.setBleu4ScoreT(new BigDecimal(userEntity.getBleu4ScoreT()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+            userEntity.setBleu4ScoreP(new BigDecimal(userEntity.getBleu4ScoreP()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+            userEntity.setBleu4ScoreF(new BigDecimal(userEntity.getBleu4ScoreF()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+            userRepository.save(userEntity);
+        }
+        return userEntityList;
     }
 }

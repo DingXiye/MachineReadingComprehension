@@ -194,4 +194,9 @@ public class UserController {
     public ResultEntity getTime() {
         return ResultService.resultBuilder(new Date().getTime());
     }
+
+    @PutMapping(value = "formatValue")
+    public ResultEntity formatValue() {
+        return ResultService.resultBuilder(userService.formatValue());
+    }
 }

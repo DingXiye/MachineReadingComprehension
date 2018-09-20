@@ -16,6 +16,7 @@ import org.springframework.util.ClassUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -82,8 +83,8 @@ public class ScoreLogService {
         ScoreLogEntity scoreLogEntity = new ScoreLogEntity();
         scoreLogEntity.setUserEntity(userEntity);
         scoreLogEntity.setType(type);
-        scoreLogEntity.setBLEU_4_Score(resultMap.get("bleu_score") * 100);
-        scoreLogEntity.setROUGE_Score(resultMap.get("rouge_score") * 100);
+        scoreLogEntity.setBLEU_4_Score(new BigDecimal(resultMap.get("bleu_score") * 100).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+        scoreLogEntity.setROUGE_Score(new BigDecimal(resultMap.get("rouge_score") * 100).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
         return scoreLogRepository.save(scoreLogEntity);
     }
 
@@ -97,5 +98,9 @@ public class ScoreLogService {
 
     public List<ScoreLogEntity> getScoreLogByUser(UserEntity userEntity) {
         return scoreLogRepository.findByUserEntityId(new Sort(Sort.Direction.DESC, "createTime"), userEntity.getId());
+    }
+
+    public List<ScoreLogEntity> getScoreLogs() {
+        return scoreLogRepository.findAll();
     }
 }
