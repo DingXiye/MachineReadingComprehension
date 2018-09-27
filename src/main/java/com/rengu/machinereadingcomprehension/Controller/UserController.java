@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.Date;
 
 @RestController
@@ -174,7 +175,7 @@ public class UserController {
 
     // 查询谈队成员
     @GetMapping(value = "/{userId}/crew")
-    public ResultEntity getCrewByUserId(@PathVariable(value = "userId") String userId) {
+    public ResultEntity getCrewByUserId(@PathVariable(value = "userId") String userId) throws ParseException {
         return ResultService.resultBuilder(userService.getCrewByUserId(userId));
     }
 

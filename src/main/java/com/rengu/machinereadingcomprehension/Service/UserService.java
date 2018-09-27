@@ -24,6 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -439,15 +441,17 @@ public class UserService implements UserDetailsService {
         return crewService.getCrewById(crewId);
     }
 
-    public List<CrewEntity> getCrewByUserId(String userId) {
+    public List<CrewEntity> getCrewByUserId(String userId) throws ParseException {
         if (StringUtils.isEmpty(userId)) {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ID_PARAM_NOT_FOUND);
         }
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = simpleDateFormat.parse("2018-09-19");
         List<CrewEntity> crewEntityList = crewService.getCrewByUserId(userId);
         Iterator<CrewEntity> crewEntityIterator = crewEntityList.iterator();
         while (crewEntityIterator.hasNext()) {
             CrewEntity crewEntity = crewEntityIterator.next();
-            if (crewEntity.getCreateTime().after(ApplicationConfig.forbendDate)) {
+            if (crewEntity.getCreateTime().after(date)) {
                 crewEntityIterator.remove();
             }
         }
