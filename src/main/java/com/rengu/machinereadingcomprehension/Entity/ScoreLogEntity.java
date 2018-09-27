@@ -1,6 +1,7 @@
 package com.rengu.machinereadingcomprehension.Entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -26,6 +27,7 @@ public class ScoreLogEntity implements Serializable {
     private double BLEU_4_Score;
     private double ROUGE_Score;
     private int type;
+    @JsonIgnore
     @ManyToOne
     private UserEntity userEntity;
 

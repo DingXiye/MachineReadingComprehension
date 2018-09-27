@@ -485,6 +485,17 @@ public class UserService implements UserDetailsService {
                         userEntityIteratorT.remove();//使用迭代器的删除方法删除
                     }
                 }
+                for (UserEntity userEntity : userEntityListT) {
+                    userEntity.setMessage(null);
+                    userEntity.setUsername(null);
+                    userEntity.setPassword(null);
+                    userEntity.setEmail(null);
+                    userEntity.setTelephoneNumber(null);
+                    userEntity.setName(null);
+                    userEntity.setAge(0);
+                    userEntity.setSex(0);
+                    userEntity.setOrganization(null);
+                }
                 return userEntityListT;
             case 1:
                 List<UserEntity> userEntityListP = userRepository.findByTeamNameNotNull(new Sort(new Sort.Order(Sort.Direction.DESC, "rougelScoreP"), new Sort.Order(Sort.Direction.DESC, "bleu4ScoreP"), new Sort.Order(Sort.Direction.ASC, "commitDateP")));
@@ -495,6 +506,17 @@ public class UserService implements UserDetailsService {
                         userEntityIteratorP.remove();//使用迭代器的删除方法删除
                     }
                 }
+                for (UserEntity userEntity : userEntityListP) {
+                    userEntity.setMessage(null);
+                    userEntity.setUsername(null);
+                    userEntity.setPassword(null);
+                    userEntity.setEmail(null);
+                    userEntity.setTelephoneNumber(null);
+                    userEntity.setName(null);
+                    userEntity.setAge(0);
+                    userEntity.setSex(0);
+                    userEntity.setOrganization(null);
+                }
                 return userEntityListP;
             case 2:
                 List<UserEntity> userEntityListF = userRepository.findByTeamNameNotNull(new Sort(new Sort.Order(Sort.Direction.DESC, "rougelScoreF"), new Sort.Order(Sort.Direction.DESC, "bleu4ScoreF"), new Sort.Order(Sort.Direction.ASC, "commitDateF")));
@@ -504,6 +526,17 @@ public class UserService implements UserDetailsService {
                     if (userEntity.getCommitDateP() == null || !scoreLogService.hasScoreLogByUserAndType(userEntity, type)) {
                         userEntityIteratorF.remove();//使用迭代器的删除方法删除
                     }
+                }
+                for (UserEntity userEntity : userEntityListF) {
+                    userEntity.setMessage(null);
+                    userEntity.setUsername(null);
+                    userEntity.setPassword(null);
+                    userEntity.setEmail(null);
+                    userEntity.setTelephoneNumber(null);
+                    userEntity.setName(null);
+                    userEntity.setAge(0);
+                    userEntity.setSex(0);
+                    userEntity.setOrganization(null);
                 }
                 return userEntityListF;
             default:

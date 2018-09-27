@@ -1,6 +1,7 @@
 package com.rengu.machinereadingcomprehension.Entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -22,6 +23,7 @@ public class CrewEntity implements Serializable {
     private int sex;
     private String telephoneNumber;
     private String organization;
+    @JsonIgnore
     @ManyToOne
     private UserEntity userEntity;
 

@@ -1,6 +1,7 @@
 package com.rengu.machinereadingcomprehension.Entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -24,6 +25,7 @@ public class DownLoadLogEntity implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime = new Date();
     private int type;
+    @JsonIgnore
     @ManyToOne
     private UserEntity userEntity;
 
