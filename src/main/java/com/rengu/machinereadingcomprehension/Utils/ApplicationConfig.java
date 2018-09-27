@@ -1,5 +1,7 @@
 package com.rengu.machinereadingcomprehension.Utils;
 
+import java.util.Date;
+
 public class ApplicationConfig {
 
     public static int MAX_COMMIT_TIMES_T = 4;
@@ -15,6 +17,9 @@ public class ApplicationConfig {
     // 默认用户
     public static String DEFAULT_USER_USERNAME = "admin";
     public static String DEFAULT_USER_PASSWORD = "tszx11hcM@4";
+
+    // 禁止添加队员时间
+    public static Date forbendDate = new Date(2018, 9, 19);
 
     // 加密
     public static String RSA_PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCEoLz5XnmUDwGpQn/gLOTQ7z9TYD6Pnqn4HCsAzhmW26GrQ5TdajYFiD67cLjXMftBBEmKO2E8LCs1GTLe9BsL8f8TWIr1h72G4Z1o6XrcnonrEMqJKYRxkNqPInyN75GdSiBQeduDUnNms2xqekF+kjH770uuM6VoR9PWUCEIBQIDAQAB";

@@ -443,7 +443,15 @@ public class UserService implements UserDetailsService {
         if (StringUtils.isEmpty(userId)) {
             throw new RuntimeException(MachineReadingComprehensionApplicationMessage.USER_ID_PARAM_NOT_FOUND);
         }
-        return crewService.getCrewByUserId(userId);
+        List<CrewEntity> crewEntityList = crewService.getCrewByUserId(userId);
+        Iterator<CrewEntity> crewEntityIterator = crewEntityList.iterator();
+        while (crewEntityIterator.hasNext()) {
+            CrewEntity crewEntity = crewEntityIterator.next();
+            if (crewEntity.getCreateTime().after(ApplicationConfig.forbendDate)) {
+                crewEntityIterator.remove();
+            }
+        }
+        return crewEntityList;
     }
 
     public List<ScoreLogEntity> getScoreLogByUser(String userId) {
