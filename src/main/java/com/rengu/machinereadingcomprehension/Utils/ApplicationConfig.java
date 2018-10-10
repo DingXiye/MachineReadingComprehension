@@ -3,7 +3,7 @@ package com.rengu.machinereadingcomprehension.Utils;
 public class ApplicationConfig {
 
     public static int MAX_COMMIT_TIMES_T = 4;
-    public static int MAX_COMMIT_TIMES_P = 2;
+    public static int MAX_COMMIT_TIMES_P = 5;
     public static int MAX_COMMIT_TIMES_F = 1;
 
     // 默认角色
