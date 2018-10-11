@@ -4,7 +4,7 @@ public class ApplicationConfig {
 
     public static int MAX_COMMIT_TIMES_T = 4;
     public static int MAX_COMMIT_TIMES_P = 5;
-    public static int MAX_COMMIT_TIMES_F = 1;
+    public static int MAX_COMMIT_TIMES_F = 3;
 
     // 默认角色
     public static String DEFAULT_ADMIN_ROLE_NAME = "admin";
