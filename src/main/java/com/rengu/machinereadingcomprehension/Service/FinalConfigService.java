@@ -140,9 +140,10 @@ public class FinalConfigService {
         return scoreLogRepository.save(scoreLogEntity);
     }
 
+    //    @Async
     public UserEntity commitFile_1(String userId, MultipartFile ref) throws Exception {
         FinalConfigEntity finalConfigEntity = finalConfigRepository.findById("1").get();
-        if (finalConfigEntity.getCommitStartTime1() == null || System.currentTimeMillis() - finalConfigEntity.getCommitStartTime1().getTime() >= 1000 * 60 * 20) {
+        if (finalConfigEntity.getCommitStartTime1() == null || System.currentTimeMillis() - finalConfigEntity.getCommitStartTime1().getTime() >= ApplicationConfig.FINAL_TIME) {
             throw new RuntimeException("比赛时间异常：" + finalConfigEntity.getCommitStartTime1());
         }
         if (StringUtils.isEmpty(userId)) {
@@ -173,7 +174,7 @@ public class FinalConfigService {
 
     public UserEntity commitFile_2(String userId, MultipartFile ref) throws Exception {
         FinalConfigEntity finalConfigEntity = finalConfigRepository.findById("1").get();
-        if (finalConfigEntity.getCommitStartTime2() == null || System.currentTimeMillis() - finalConfigEntity.getCommitStartTime2().getTime() >= 1000 * 60 * 20) {
+        if (finalConfigEntity.getCommitStartTime2() == null || System.currentTimeMillis() - finalConfigEntity.getCommitStartTime2().getTime() >= ApplicationConfig.FINAL_TIME) {
             throw new RuntimeException("比赛时间异常：" + finalConfigEntity.getCommitStartTime2());
         }
         if (StringUtils.isEmpty(userId)) {
@@ -204,7 +205,7 @@ public class FinalConfigService {
 
     public UserEntity commitFile_3(String userId, MultipartFile ref) throws Exception {
         FinalConfigEntity finalConfigEntity = finalConfigRepository.findById("1").get();
-        if (finalConfigEntity.getCommitStartTime3() == null || System.currentTimeMillis() - finalConfigEntity.getCommitStartTime3().getTime() >= 1000 * 60 * 20) {
+        if (finalConfigEntity.getCommitStartTime3() == null || System.currentTimeMillis() - finalConfigEntity.getCommitStartTime3().getTime() >= ApplicationConfig.FINAL_TIME) {
             throw new RuntimeException("比赛时间异常：" + finalConfigEntity.getCommitStartTime3());
         }
         if (StringUtils.isEmpty(userId)) {

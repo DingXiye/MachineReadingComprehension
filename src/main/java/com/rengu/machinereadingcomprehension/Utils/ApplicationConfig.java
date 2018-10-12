@@ -6,6 +6,9 @@ public class ApplicationConfig {
     public static int MAX_COMMIT_TIMES_P = 5;
     public static int MAX_COMMIT_TIMES_F = 3;
 
+    // 决赛时间
+    public static long FINAL_TIME = 1000 * 60 * 20;
+
     // 默认角色
     public static String DEFAULT_ADMIN_ROLE_NAME = "admin";
     public static String DEFAULT_USER_ROLE_NAME = "user";
