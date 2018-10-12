@@ -235,6 +235,16 @@ public class FinalConfigService {
 
     public List<UserEntity> orderUser(int type) {
         switch (type) {
+            case 0:
+                List<UserEntity> userEntityListF = userRepository.findAllByCommitDateF1NotNullAndCommitDateF2NotNullAndCommitDateF3NotNull();
+                for (UserEntity userEntity : userEntityListF) {
+                    userEntity.setRougelScoreF(new BigDecimal(0.4 * userEntity.getRougelScoreF1() + 0.4 * userEntity.getRougelScoreF2() + 0.2 * userEntity.getRougelScoreF3()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+                    userEntity.setBleu4ScoreF(new BigDecimal(0.4 * userEntity.getBleu4ScoreF1() + 0.4 * userEntity.getBleu4ScoreF2() + 0.2 * userEntity.getBleu4ScoreF3()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+                    userEntity.setAvgIndex(new BigDecimal(0.4 * userEntity.getF1Index() + 0.4 * userEntity.getF2Index() + 0.2 * userEntity.getF3Index()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+                    userEntity.setCommitDateF(new Date());
+                    userRepository.save(userEntity);
+                }
+                return userEntityListF;
             case 1:
                 List<UserEntity> userEntityListF1 = userRepository.findByTeamNameNotNull(new Sort(new Sort.Order(Sort.Direction.DESC, "rougelScoreF1"), new Sort.Order(Sort.Direction.DESC, "bleu4ScoreF1"), new Sort.Order(Sort.Direction.ASC, "commitDateF1")));
                 Iterator<UserEntity> userEntityIteratorF1 = userEntityListF1.iterator();
@@ -279,6 +289,97 @@ public class FinalConfigService {
                     userEntity.setF3Index(i + 1);
                     userRepository.save(userEntity);
                 }
+                return userEntityListF3;
+            default:
+                throw new RuntimeException("未知的请求类型");
+        }
+    }
+
+    public List<UserEntity> rankingUser(int type) {
+        switch (type) {
+            case 0:
+                List<UserEntity> userEntityFList = userRepository.findAllByRougelScoreFNotNullAndBleu4ScoreFNotNullAndAvgIndexNotNull(new Sort(new Sort.Order(Sort.Direction.DESC, "rougelScoreF"), new Sort.Order(Sort.Direction.DESC, "bleu4ScoreF"), new Sort.Order(Sort.Direction.ASC, "avgIndex")));
+                Iterator<UserEntity> userEntityIterator = userEntityFList.iterator();
+                while (userEntityIterator.hasNext()) {
+                    UserEntity userEntity = userEntityIterator.next();
+                    if (userEntity.getCommitDateF() == null) {
+                        userEntityIterator.remove();//使用迭代器的删除方法删除
+                    }
+                }
+//                for (UserEntity userEntity : userEntityFList) {
+//                    userEntity.setMessage(null);
+//                    userEntity.setUsername(null);
+//                    userEntity.setPassword(null);
+//                    userEntity.setEmail(null);
+//                    userEntity.setTelephoneNumber(null);
+//                    userEntity.setName(null);
+//                    userEntity.setAge(0);
+//                    userEntity.setSex(0);
+//                    userEntity.setOrganization(null);
+//                }
+                return userEntityFList;
+            case 1:
+                List<UserEntity> userEntityListF1 = userRepository.findByTeamNameNotNull(new Sort(new Sort.Order(Sort.Direction.DESC, "rougelScoreF1"), new Sort.Order(Sort.Direction.DESC, "bleu4ScoreF1"), new Sort.Order(Sort.Direction.ASC, "commitDateF1")));
+                Iterator<UserEntity> userEntityIteratorF1 = userEntityListF1.iterator();
+                while (userEntityIteratorF1.hasNext()) {
+                    UserEntity userEntity = userEntityIteratorF1.next();
+                    if (userEntity.getCommitDateF1() == null || !scoreLogRepository.existsByUserEntityAndType(userEntity, type + 2)) {
+                        userEntityIteratorF1.remove();//使用迭代器的删除方法删除
+                    }
+                }
+//                for (UserEntity userEntity : userEntityListF1) {
+//                    userEntity.setMessage(null);
+//                    userEntity.setUsername(null);
+//                    userEntity.setPassword(null);
+//                    userEntity.setEmail(null);
+//                    userEntity.setTelephoneNumber(null);
+//                    userEntity.setName(null);
+//                    userEntity.setAge(0);
+//                    userEntity.setSex(0);
+//                    userEntity.setOrganization(null);
+//                }
+                return userEntityListF1;
+            case 2:
+                List<UserEntity> userEntityListF2 = userRepository.findByTeamNameNotNull(new Sort(new Sort.Order(Sort.Direction.DESC, "rougelScoreF2"), new Sort.Order(Sort.Direction.DESC, "bleu4ScoreF2"), new Sort.Order(Sort.Direction.ASC, "commitDateF2")));
+                Iterator<UserEntity> userEntityIteratorF2 = userEntityListF2.iterator();
+                while (userEntityIteratorF2.hasNext()) {
+                    UserEntity userEntity = userEntityIteratorF2.next();
+                    if (userEntity.getCommitDateF2() == null || !scoreLogRepository.existsByUserEntityAndType(userEntity, type + 2)) {
+                        userEntityIteratorF2.remove();//使用迭代器的删除方法删除
+                    }
+                }
+//                for (UserEntity userEntity : userEntityListF2) {
+//                    userEntity.setMessage(null);
+//                    userEntity.setUsername(null);
+//                    userEntity.setPassword(null);
+//                    userEntity.setEmail(null);
+//                    userEntity.setTelephoneNumber(null);
+//                    userEntity.setName(null);
+//                    userEntity.setAge(0);
+//                    userEntity.setSex(0);
+//                    userEntity.setOrganization(null);
+//                }
+                return userEntityListF2;
+            case 3:
+                List<UserEntity> userEntityListF3 = userRepository.findByTeamNameNotNull(new Sort(new Sort.Order(Sort.Direction.DESC, "rougelScoreF3"), new Sort.Order(Sort.Direction.DESC, "bleu4ScoreF3"), new Sort.Order(Sort.Direction.ASC, "commitDateF3")));
+                Iterator<UserEntity> userEntityIteratorF3 = userEntityListF3.iterator();
+                while (userEntityIteratorF3.hasNext()) {
+                    UserEntity userEntity = userEntityIteratorF3.next();
+                    if (userEntity.getCommitDateF3() == null || !scoreLogRepository.existsByUserEntityAndType(userEntity, type + 2)) {
+                        userEntityIteratorF3.remove();//使用迭代器的删除方法删除
+                    }
+                }
+//                for (UserEntity userEntity : userEntityListF3) {
+//                    userEntity.setMessage(null);
+//                    userEntity.setUsername(null);
+//                    userEntity.setPassword(null);
+//                    userEntity.setEmail(null);
+//                    userEntity.setTelephoneNumber(null);
+//                    userEntity.setName(null);
+//                    userEntity.setAge(0);
+//                    userEntity.setSex(0);
+//                    userEntity.setOrganization(null);
+//                }
                 return userEntityListF3;
             default:
                 throw new RuntimeException("未知的请求类型");

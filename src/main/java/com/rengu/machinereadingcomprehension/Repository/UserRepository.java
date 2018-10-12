@@ -20,4 +20,8 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
     Optional<UserEntity> findByTelephoneNumber(String telephoneNumber);
 
     List<UserEntity> findByTeamNameNotNull(Sort sort);
+
+    List<UserEntity> findAllByCommitDateF1NotNullAndCommitDateF2NotNullAndCommitDateF3NotNull();
+
+    List<UserEntity> findAllByRougelScoreFNotNullAndBleu4ScoreFNotNullAndAvgIndexNotNull(Sort sort);
 }

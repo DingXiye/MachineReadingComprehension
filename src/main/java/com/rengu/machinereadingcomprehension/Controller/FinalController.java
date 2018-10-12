@@ -54,4 +54,9 @@ public class FinalController {
     public ResultEntity orderUser(@RequestParam(value = "type") int type) {
         return ResultService.resultBuilder(finalConfigService.orderUser(type));
     }
+
+    @GetMapping(value = "/ranking")
+    public ResultEntity rankingUser(@RequestParam(value = "type") int type) {
+        return ResultService.resultBuilder(finalConfigService.rankingUser(type));
+    }
 }

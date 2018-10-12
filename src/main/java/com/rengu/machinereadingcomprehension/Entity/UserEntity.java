@@ -48,26 +48,26 @@ public class UserEntity implements UserDetails, Serializable {
     // 决赛总成绩
     private double bleu4ScoreF;
     private double rougelScoreF;
-    private int AVGIndex;
+    private double avgIndex;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date commitDateF;
     private int commitTimesF = ApplicationConfig.MAX_COMMIT_TIMES_F;
     // 决赛分轮成绩
     private double bleu4ScoreF1;
     private double rougelScoreF1;
-    private int F1Index;
+    private int f1Index;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date commitDateF1;
     private int commitTimesF1 = ApplicationConfig.MAX_COMMIT_TIMES_F;
     private double bleu4ScoreF2;
     private double rougelScoreF2;
-    private int F2Index;
+    private int f2Index;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date commitDateF2;
     private int commitTimesF2 = ApplicationConfig.MAX_COMMIT_TIMES_F;
     private double bleu4ScoreF3;
     private double rougelScoreF3;
-    private int F3Index;
+    private int f3Index;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date commitDateF3;
     private int commitTimesF3 = ApplicationConfig.MAX_COMMIT_TIMES_F;
@@ -305,12 +305,12 @@ public class UserEntity implements UserDetails, Serializable {
         this.rougelScoreF = rougelScoreF;
     }
 
-    public int getAVGIndex() {
-        return AVGIndex;
+    public double getAvgIndex() {
+        return avgIndex;
     }
 
-    public void setAVGIndex(int AVGIndex) {
-        this.AVGIndex = AVGIndex;
+    public void setAvgIndex(double avgIndex) {
+        this.avgIndex = avgIndex;
     }
 
     public Date getCommitDateF() {
@@ -346,11 +346,11 @@ public class UserEntity implements UserDetails, Serializable {
     }
 
     public int getF1Index() {
-        return F1Index;
+        return f1Index;
     }
 
     public void setF1Index(int f1Index) {
-        F1Index = f1Index;
+        this.f1Index = f1Index;
     }
 
     public Date getCommitDateF1() {
@@ -386,11 +386,11 @@ public class UserEntity implements UserDetails, Serializable {
     }
 
     public int getF2Index() {
-        return F2Index;
+        return f2Index;
     }
 
     public void setF2Index(int f2Index) {
-        F2Index = f2Index;
+        this.f2Index = f2Index;
     }
 
     public Date getCommitDateF2() {
@@ -426,11 +426,11 @@ public class UserEntity implements UserDetails, Serializable {
     }
 
     public int getF3Index() {
-        return F3Index;
+        return f3Index;
     }
 
     public void setF3Index(int f3Index) {
-        F3Index = f3Index;
+        this.f3Index = f3Index;
     }
 
     public Date getCommitDateF3() {
@@ -476,19 +476,19 @@ public class UserEntity implements UserDetails, Serializable {
                 commitTimesP == that.commitTimesP &&
                 Double.compare(that.bleu4ScoreF, bleu4ScoreF) == 0 &&
                 Double.compare(that.rougelScoreF, rougelScoreF) == 0 &&
-                AVGIndex == that.AVGIndex &&
+                Double.compare(that.avgIndex, avgIndex) == 0 &&
                 commitTimesF == that.commitTimesF &&
                 Double.compare(that.bleu4ScoreF1, bleu4ScoreF1) == 0 &&
                 Double.compare(that.rougelScoreF1, rougelScoreF1) == 0 &&
-                F1Index == that.F1Index &&
+                f1Index == that.f1Index &&
                 commitTimesF1 == that.commitTimesF1 &&
                 Double.compare(that.bleu4ScoreF2, bleu4ScoreF2) == 0 &&
                 Double.compare(that.rougelScoreF2, rougelScoreF2) == 0 &&
-                F2Index == that.F2Index &&
+                f2Index == that.f2Index &&
                 commitTimesF2 == that.commitTimesF2 &&
                 Double.compare(that.bleu4ScoreF3, bleu4ScoreF3) == 0 &&
                 Double.compare(that.rougelScoreF3, rougelScoreF3) == 0 &&
-                F3Index == that.F3Index &&
+                f3Index == that.f3Index &&
                 commitTimesF3 == that.commitTimesF3 &&
                 Objects.equals(id, that.id) &&
                 Objects.equals(createTime, that.createTime) &&
@@ -512,6 +512,6 @@ public class UserEntity implements UserDetails, Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, createTime, message, username, password, email, telephoneNumber, name, age, sex, teamName, organization, accountNonExpired, accountNonLocked, credentialsNonExpired, enabled, badgePath, bleu4ScoreT, rougelScoreT, commitDateT, commitTimesT, bleu4ScoreP, rougelScoreP, commitDateP, commitTimesP, bleu4ScoreF, rougelScoreF, AVGIndex, commitDateF, commitTimesF, bleu4ScoreF1, rougelScoreF1, F1Index, commitDateF1, commitTimesF1, bleu4ScoreF2, rougelScoreF2, F2Index, commitDateF2, commitTimesF2, bleu4ScoreF3, rougelScoreF3, F3Index, commitDateF3, commitTimesF3, roleEntities);
+        return Objects.hash(id, createTime, message, username, password, email, telephoneNumber, name, age, sex, teamName, organization, accountNonExpired, accountNonLocked, credentialsNonExpired, enabled, badgePath, bleu4ScoreT, rougelScoreT, commitDateT, commitTimesT, bleu4ScoreP, rougelScoreP, commitDateP, commitTimesP, bleu4ScoreF, rougelScoreF, avgIndex, commitDateF, commitTimesF, bleu4ScoreF1, rougelScoreF1, f1Index, commitDateF1, commitTimesF1, bleu4ScoreF2, rougelScoreF2, f2Index, commitDateF2, commitTimesF2, bleu4ScoreF3, rougelScoreF3, f3Index, commitDateF3, commitTimesF3, roleEntities);
     }
 }
