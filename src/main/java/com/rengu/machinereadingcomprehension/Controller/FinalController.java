@@ -1,11 +1,17 @@
 package com.rengu.machinereadingcomprehension.Controller;
 
 import com.rengu.machinereadingcomprehension.Entity.ResultEntity;
+import com.rengu.machinereadingcomprehension.Service.DocumentService;
 import com.rengu.machinereadingcomprehension.Service.FinalConfigService;
 import com.rengu.machinereadingcomprehension.Service.ResultService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 /**
  * @program: machine-reading-comprehension
@@ -18,10 +24,12 @@ import org.springframework.web.multipart.MultipartFile;
 public class FinalController {
 
     private final FinalConfigService finalConfigService;
+    private final DocumentService documentService;
 
     @Autowired
-    public FinalController(FinalConfigService finalConfigService) {
+    public FinalController(FinalConfigService finalConfigService, DocumentService documentService) {
         this.finalConfigService = finalConfigService;
+        this.documentService = documentService;
     }
 
     // 开始比赛
@@ -58,5 +66,21 @@ public class FinalController {
     @GetMapping(value = "/ranking")
     public ResultEntity rankingUser(@RequestParam(value = "type") int type) {
         return ResultService.resultBuilder(finalConfigService.rankingUser(type));
+    }
+
+    @PostMapping(value = "/import")
+    public ResultEntity saveDocument(@RequestParam(value = "doc") MultipartFile doc) throws IOException {
+        documentService.saveDocuments(doc);
+        return ResultService.resultBuilder("导入成功");
+    }
+
+    @GetMapping(value = "/documents")
+    public ResultEntity getDocuments(@PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        return ResultService.resultBuilder(documentService.getDocuments(pageable));
+    }
+
+    @GetMapping(value = "/documents/{documentId}")
+    public ResultEntity getDocuments(@PathVariable(value = "documentId") int documentId) {
+        return ResultService.resultBuilder(documentService.getDocumentById(documentId));
     }
 }

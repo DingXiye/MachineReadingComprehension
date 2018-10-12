@@ -41,12 +41,14 @@ public class FinalConfigService {
     private final FinalConfigRepository finalConfigRepository;
     private final UserRepository userRepository;
     private final ScoreLogRepository scoreLogRepository;
+    private final MarkService markService;
 
     @Autowired
-    public FinalConfigService(FinalConfigRepository finalConfigRepository, UserRepository userRepository, ScoreLogRepository scoreLogRepository) {
+    public FinalConfigService(FinalConfigRepository finalConfigRepository, UserRepository userRepository, ScoreLogRepository scoreLogRepository, MarkService markService) {
         this.finalConfigRepository = finalConfigRepository;
         this.userRepository = userRepository;
         this.scoreLogRepository = scoreLogRepository;
+        this.markService = markService;
     }
 
     public FinalConfigEntity finalConfigInit() {
@@ -94,43 +96,7 @@ public class FinalConfigService {
     }
 
     // 保存成绩历史
-    public ScoreLogEntity saveScoreLogF(UserEntity userEntity, MultipartFile multipartFile, int type) throws Exception {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyymmddHHmmss");
-        // 接收文件
-        File resultFile = new File(FileUtils.getUserDirectoryPath() + "/User_Result/" + userEntity.getTeamName() + "_" + simpleDateFormat.format(new Date()) + "." + FilenameUtils.getExtension(multipartFile.getOriginalFilename()));
-        FileUtils.copyInputStreamToFile(multipartFile.getInputStream(), resultFile);
-        File answerFile = null;
-        switch (type) {
-            case 1:
-                answerFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("classes/", "") + "F1.json");
-                break;
-            case 2:
-                answerFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("classes/", "") + "F2.json");
-                break;
-            case 3:
-                answerFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("classes/", "") + "F3.json");
-                break;
-            default:
-                throw new RuntimeException("未知的请求类型");
-        }
-        if (!answerFile.exists()) {
-            switch (type) {
-                case 1:
-                    answerFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("file:/", "/").replace("machine-reading-comprehension-0.0.1-SNAPSHOT.jar!/BOOT-INF/classes!/", "") + "F1.json");
-                    break;
-                case 2:
-                    answerFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("file:/", "/").replace("machine-reading-comprehension-0.0.1-SNAPSHOT.jar!/BOOT-INF/classes!/", "") + "F2.json");
-                    break;
-                case 3:
-                    answerFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("file:/", "/").replace("machine-reading-comprehension-0.0.1-SNAPSHOT.jar!/BOOT-INF/classes!/", "") + "F3.json");
-                    break;
-                default:
-                    throw new RuntimeException("未知的请求类型");
-            }
-            if (!answerFile.exists()) {
-                throw new RuntimeException("服务器文件异常，请检查服务器配置。");
-            }
-        }
+    public ScoreLogEntity saveScoreLogF(UserEntity userEntity, File answerFile, File resultFile, int type) {
         ConcurrentHashMap<String, Double> resultMap = Metric.getScore(answerFile, resultFile);
         ScoreLogEntity scoreLogEntity = new ScoreLogEntity();
         scoreLogEntity.setUserEntity(userEntity);
@@ -163,8 +129,20 @@ public class FinalConfigService {
             }
         }
         // 计算逻辑
-        ScoreLogEntity scoreLogEntity = saveScoreLogF(userEntity, ref, 1);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyymmddHHmmss");
+        // 接收文件
+        File resultFile = new File(FileUtils.getUserDirectoryPath() + "/User_Result/" + userEntity.getTeamName() + "_" + simpleDateFormat.format(new Date()) + "." + FilenameUtils.getExtension(ref.getOriginalFilename()));
+        FileUtils.copyInputStreamToFile(ref.getInputStream(), resultFile);
+        File answerFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("classes/", "") + "F1.json");
+        if (!answerFile.exists()) {
+            answerFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("file:/", "/").replace("machine-reading-comprehension-0.0.1-SNAPSHOT.jar!/BOOT-INF/classes!/", "") + "F1.json");
+            if (!answerFile.exists()) {
+                throw new RuntimeException("服务器文件异常，请检查服务器配置。");
+            }
+        }
+        ScoreLogEntity scoreLogEntity = saveScoreLogF(userEntity, answerFile, resultFile, 1);
         if (scoreLogEntity.getROUGE_Score() > userEntity.getRougelScoreF1()) {
+            markService.updateUserMarks(userEntity, resultFile, 1);
             userEntity.setRougelScoreF1(scoreLogEntity.getROUGE_Score());
             userEntity.setBleu4ScoreF1(scoreLogEntity.getBLEU_4_Score());
         }
@@ -194,8 +172,20 @@ public class FinalConfigService {
             }
         }
         // 计算逻辑
-        ScoreLogEntity scoreLogEntity = saveScoreLogF(userEntity, ref, 2);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyymmddHHmmss");
+        // 接收文件
+        File resultFile = new File(FileUtils.getUserDirectoryPath() + "/User_Result/" + userEntity.getTeamName() + "_" + simpleDateFormat.format(new Date()) + "." + FilenameUtils.getExtension(ref.getOriginalFilename()));
+        FileUtils.copyInputStreamToFile(ref.getInputStream(), resultFile);
+        File answerFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("classes/", "") + "F2.json");
+        if (!answerFile.exists()) {
+            answerFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("file:/", "/").replace("machine-reading-comprehension-0.0.1-SNAPSHOT.jar!/BOOT-INF/classes!/", "") + "F2.json");
+            if (!answerFile.exists()) {
+                throw new RuntimeException("服务器文件异常，请检查服务器配置。");
+            }
+        }
+        ScoreLogEntity scoreLogEntity = saveScoreLogF(userEntity, answerFile, resultFile, 2);
         if (scoreLogEntity.getROUGE_Score() > userEntity.getRougelScoreF2()) {
+            markService.updateUserMarks(userEntity, resultFile, 2);
             userEntity.setRougelScoreF2(scoreLogEntity.getROUGE_Score());
             userEntity.setBleu4ScoreF2(scoreLogEntity.getBLEU_4_Score());
         }
@@ -225,8 +215,20 @@ public class FinalConfigService {
             }
         }
         // 计算逻辑
-        ScoreLogEntity scoreLogEntity = saveScoreLogF(userEntity, ref, 3);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyymmddHHmmss");
+        // 接收文件
+        File resultFile = new File(FileUtils.getUserDirectoryPath() + "/User_Result/" + userEntity.getTeamName() + "_" + simpleDateFormat.format(new Date()) + "." + FilenameUtils.getExtension(ref.getOriginalFilename()));
+        FileUtils.copyInputStreamToFile(ref.getInputStream(), resultFile);
+        File answerFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("classes/", "") + "F3.json");
+        if (!answerFile.exists()) {
+            answerFile = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath().replace("file:/", "/").replace("machine-reading-comprehension-0.0.1-SNAPSHOT.jar!/BOOT-INF/classes!/", "") + "F3.json");
+            if (!answerFile.exists()) {
+                throw new RuntimeException("服务器文件异常，请检查服务器配置。");
+            }
+        }
+        ScoreLogEntity scoreLogEntity = saveScoreLogF(userEntity, answerFile, resultFile, 3);
         if (scoreLogEntity.getROUGE_Score() > userEntity.getRougelScoreF3()) {
+            markService.updateUserMarks(userEntity, resultFile, 3);
             userEntity.setRougelScoreF3(scoreLogEntity.getROUGE_Score());
             userEntity.setBleu4ScoreF3(scoreLogEntity.getBLEU_4_Score());
         }
