@@ -66,7 +66,7 @@ public class MarkService {
                 String markId = sonNode.get("questions_id").asText();
                 if (markRepository.existsById(markId)) {
                     MarkEntity markEntity = markRepository.findById(markId).get();
-                    Optional<UserMarkEntity> userMarkEntityOptional = userMarkRepository.findByMarkIdAndUserIdAndType(markEntity.getId(), userId, type);
+                    Optional<UserMarkEntity> userMarkEntityOptional = userMarkRepository.findByMarkIdAndUserIdAndType(markEntity.getId(), userEntity.getId(), type);
                     UserMarkEntity userMarkEntity = null;
                     if (userMarkEntityOptional.isPresent()) {
                         userMarkEntity = userMarkEntityOptional.get();

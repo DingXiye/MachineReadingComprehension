@@ -32,6 +32,12 @@ public class FinalController {
         this.documentService = documentService;
     }
 
+    // 比赛状态
+    @GetMapping(value = "state")
+    public ResultEntity state() {
+        return ResultService.resultBuilder(finalConfigService.state());
+    }
+
     // 开始比赛
     @PatchMapping(value = "/start-final")
     public ResultEntity startFinal(@RequestParam(value = "type") int type) {

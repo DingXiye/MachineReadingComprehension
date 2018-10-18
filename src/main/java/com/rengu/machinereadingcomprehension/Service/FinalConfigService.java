@@ -51,6 +51,10 @@ public class FinalConfigService {
         this.markService = markService;
     }
 
+    public FinalConfigEntity state() {
+        return finalConfigRepository.findById("1").get();
+    }
+
     public FinalConfigEntity finalConfigInit() {
         FinalConfigEntity finalConfigEntity = new FinalConfigEntity();
         finalConfigEntity.setId("1");
