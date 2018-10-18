@@ -9,7 +9,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -60,16 +59,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers(HttpMethod.POST, "/users/forgetpassword").permitAll();
         http.authorizeRequests().antMatchers(HttpMethod.GET, "/users/ranking").permitAll();
         http.authorizeRequests().antMatchers(HttpMethod.GET, "/users/time").permitAll();
-        http.requestMatchers().antMatchers(HttpMethod.OPTIONS, "/rest/**", "/api/**", "/**");
+//        http.requestMatchers().antMatchers(HttpMethod.OPTIONS, "/rest/**", "/api/**", "/**");
         http.authorizeRequests().anyRequest().authenticated();
     }
 
-    @Override
-    public void configure(WebSecurity web) {
-        web.ignoring().antMatchers("/v2/api-docs",//swagger api json
-                "/swagger-resources/configuration/ui",//用来获取支持的动作
-                "/swagger-resources",//用来获取api-docs的URI
-                "/swagger-resources/configuration/security",//安全选项
-                "/swagger-ui.html");
-    }
+//    @Override
+//    public void configure(WebSecurity web) {
+//        web.ignoring().antMatchers("/v2/api-docs",//swagger api json
+//                "/swagger-resources/configuration/ui",//用来获取支持的动作
+//                "/swagger-resources",//用来获取api-docs的URI
+//                "/swagger-resources/configuration/security",//安全选项
+//                "/swagger-ui.html");
+//    }
 }
